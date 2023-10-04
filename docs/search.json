@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome!",
+    "section": "",
+    "text": "This is a website for the submission of Assignment 1 for STA5073Z."
+  },
+  {
+    "objectID": "addition.html",
+    "href": "addition.html",
+    "title": "Assignment 1: Predict-the-President - Report",
+    "section": "",
+    "text": "This page will contain the main report of the project."
+  },
+  {
+    "objectID": "Appendix.html",
+    "href": "Appendix.html",
+    "title": "Appendix",
+    "section": "",
+    "text": "This will contain the appendix of the report and maybe some code.\n\n2 + 2\n\n[1] 4"
+  }
+]
