@@ -1,0 +1,6 @@
+---
+title: "Assignment 1: Predict-the-President - Report"
+---
+
+This page will contain the main report of the project. 
+
