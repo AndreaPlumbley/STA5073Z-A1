@@ -1,10 +1,6 @@
----
-title: "Assignment 1: Predict-the-President - Report"
----
+## Read in data and make bag of words
 
-This page will contain the main report of the project. But for now some rough code and ideas. 
 
-```{r, messages=FALSE, warnings = FALSE}
 # Required libraries
 library(dplyr)
 library(tidyverse)
@@ -13,13 +9,7 @@ library(lubridate)
 library(stringr)
 library(rpart)
 
-set.seed(2023)
-```
 
-
-
-
-```{r, echo = FALSE}
 ## Read the data in: code given. 
 
 # read in text data files and organise these into a data frame
@@ -96,65 +86,44 @@ sona <-sona %>%
   )
 
 sona = sona[,2:5]
-```
 
-Parse data into sentences:
-
-```{r}
 ## Parse into sentences 
 sona_sentences = unnest_tokens(sona, sentence, speech, token="sentences") %>%
-                  mutate(sentence_id = row_number()) %>% 
-                  rename(president_name = president_13)
+  mutate(sentence_id = row_number()) %>% 
+  rename(president_name = president_13)
 
-sona_words = sona_sentences %>% unnest_tokens(word, sentence, token = "words")
-```
-
-
-Some more cleaning:
-```{r}
+#some cleaning
 replace_reg = '(https?:.*?(\\s|.$))|(www.*?(\\s|.$))|&amp;|&lt;|&gt|\\*|\\(|\\)|\\"|\\“|\\”|\\¦|\\[|\\]|\\>|\\¬|\\.|\\�'
-sent_president_cleaned = sentence_president %>% 
-                          mutate(sentences =str_replace_all(sentence_president$sentence, replace_reg, ''))   %>%                            select(sentences, president_name) %>% 
-                          mutate(sentence_ID = row_number())
-```
 
-What to do with numbers and contractions. 
+sona_sentences_cleaned = sona_sentences %>% 
+                          mutate(sentences =str_replace_all(sona_sentences$sentence, replace_reg, ''))  %>%
+                          select(-sentence)
 
-But need to keep track of what sentence each word was a part of maybe 
+sona_words = sona_sentences_cleaned %>% 
+              unnest_tokens(word, sentences, token = "words")
 
-```{r}
-words_presi_cleaned = unnest_tokens(sent_president_cleaned, word, sentences, token="words") %>% select(sentence_ID, everything())
-
-testing = words_presi_cleaned %>% group_by(president_name)%>%slice_sample(n=100)
-```
-
-```{r}
-## Trying to figure out bag of words 
-
-##Give words and sentence id separtely before doing word bag
+## Need to still get rid of numbers and do some more cleaning
 
 all_words = sona_words %>%
             group_by(word) %>%
-            count(sort=T) %>%
+            count() %>%
             ungroup()
 
-#must rename
 sentence_word_links = sona_words %>%
-                        inner_join(all_words) %>%
-                        group_by(sentence_id, word) %>%
-                        count() %>%
-                        group_by(sentence_id) %>%
-                        mutate(total = sum(n)) %>%
-                        ungroup()
-                
+                      inner_join(all_words) %>%
+                      group_by(sentence_id, word) %>%
+                      count() %>%
+                      group_by(sentence_id) %>%
+                      mutate(total = sum(n)) %>%
+                      ungroup()
 
-bag_of_words <- sentence_word_links %>% 
+bag_of_words = sentence_word_links %>% 
                 select(sentence_id, word, n) %>% 
                 pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
-                left_join(sona_words %>% select(sentence_id, president_name)) %>%
+                left_join(sona_sentences_cleaned %>% select(sentence_id, president_name)) %>%
                 select(sentence_id, president_name, everything())
 
-# number of sentences
+
 nrow(bag_of_words)
 
 
@@ -162,60 +131,31 @@ table(bag_of_words$president_name)
 
 
 bag_of_words_4_pres = bag_of_words %>% filter(president_name=="Mandela"|
-                                             president_name=="Mbeki"|
-                                             president_name=="Zuma"|
-                                             president_name== "Ramaphosa")
+                                                president_name=="Mbeki"|
+                                                president_name=="Zuma"|
+                                                president_name== "Ramaphosa")
 
 table(bag_of_words_4_pres$president_name)
 
-aaa = bag_of_words %>% slice_sample(n = 50)
+
+## This works
+testing = all_words %>% slice_sample(prop=0.5)
+
+## And this works
+testing = sentence_word_links %>% slice_sample(prop=0.5)
+
+## BUT this doesnt work :(
+testing = bag_of_words %>% 
+            group_by(president_name) %>%
+            slice_sample(n=10, replace = FALSE)
 
 bag_of_words_grouped <- bag_of_words_4_pres %>%
   group_by(president_name) %>%
   sample_n(100) %>%
   ungroup()
 
-
-BOW_Mandela = bag_of_words_4_pres[,bag_of_words_4_pres$president_name=="Mandela"]
-
-## do it yourself :(
-```
-
-What to do with imbalanced classes??
-
-
-```{r}
-
-set.seed(2023)
-
-training_ids <- bag_of_words %>% 
-  group_by(president_name) %>% 
-  slice_sample(prop = 0.7) %>% 
-  ungroup() %>%
-  select(sentence_ID)
-
-training_tweets <- bag_of_words %>% 
-  right_join(training_ids, by = 'sentence_ID') %>%
-  select(-sentence_ID)
-
-test_tweets <- bag_of_words %>% 
-  anti_join(training_ids, by = 'sentence_ID') %>%
-  select(-sentence_ID)
-```
-
-```{r}
-fit = rpart(president~., bag_of_words_4_pres[,-1], method = "class")
-
-# options(repr.plot.width = 12, repr.plot.height = 10) # set plot size in the notebook
-plot(fit, main = 'Full Classification Tree')
-text(fit, use.n = TRUE, all = TRUE, cex=.8)
-
-fittedtrain <- predict(fit, type = 'class')
-predtrain <- table(bag_of_words_4_pres$president, fittedtrain)
-predtrain
-
-round(sum(diag(predtrain))/sum(predtrain), 3)
-```
-
+bag_of_words_grouped <- bag_of_words_4_pres %>%
+  group_by(president_name) %>%
+  slice(sample(n(), 200, replace = FALSE))
 
 
