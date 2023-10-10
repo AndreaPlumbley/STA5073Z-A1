@@ -96,32 +96,39 @@ sona_sentences = unnest_tokens(sona, sentence, speech, token="sentences") %>%
 replace_reg = '(https?:.*?(\\s|.$))|(www.*?(\\s|.$))|&amp;|&lt;|&gt|\\*|\\(|\\)|\\"|\\“|\\”|\\¦|\\[|\\]|\\>|\\¬|\\.|\\�'
 
 sona_sentences_cleaned = sona_sentences %>% 
-                          mutate(sentences =str_replace_all(sona_sentences$sentence, replace_reg, ''))  %>%
-                          select(-sentence)
+  mutate(sentences =str_replace_all(sona_sentences$sentence, replace_reg, ''))  %>%
+  select(-sentence)
 
 sona_words = sona_sentences_cleaned %>% 
-              unnest_tokens(word, sentences, token = "words")
+  unnest_tokens(word, sentences, token = "words")
 
 ## Need to still get rid of numbers and do some more cleaning
 
 all_words = sona_words %>%
-            group_by(word) %>%
-            count() %>%
-            ungroup()
+  group_by(word) %>%
+  count() %>%
+  ungroup()
+
+all_words_cleaned = all_words %>%
+                    filter(!str_detect(word, "\\d")) %>%
+                    filter(str_length(word) > 2)
+
+stopwords = stop_words$word
+all_words_final = anti_join(all_words_cleaned, stop_words, by = "word")
 
 sentence_word_links = sona_words %>%
-                      inner_join(all_words) %>%
-                      group_by(sentence_id, word) %>%
-                      count() %>%
-                      group_by(sentence_id) %>%
-                      mutate(total = sum(n)) %>%
-                      ungroup()
+  inner_join(all_words_final) %>%
+  group_by(sentence_id, word) %>%
+  count() %>%
+  group_by(sentence_id) %>%
+  mutate(total = sum(n)) %>%
+  ungroup()
 
 bag_of_words = sentence_word_links %>% 
-                select(sentence_id, word, n) %>% 
-                pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
-                left_join(sona_sentences_cleaned %>% select(sentence_id, president_name)) %>%
-                select(sentence_id, president_name, everything())
+  select(sentence_id, word, n) %>% 
+  pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
+  left_join(sona_sentences_cleaned %>% select(sentence_id, president_name)) %>%
+  select(sentence_id, president_name, everything())
 
 
 nrow(bag_of_words)
@@ -131,42 +138,49 @@ table(bag_of_words$president_name)
 
 
 bag_of_words_4_pres = bag_of_words %>% 
-                       filter(president_name=="Mandela"|
-                              president_name=="Mbeki"|
-                              president_name=="Zuma"|
-                              president_name== "Ramaphosa")
-                      
+  filter(president_name=="Mandela"|
+           president_name=="Mbeki"|
+           president_name=="Zuma"|
+           president_name== "Ramaphosa")
+
 
 table(bag_of_words_4_pres$president_name)
 
 bag_of_words_4_pres = bag_of_words_4_pres %>%
-                        group_by(president_name) %>%
-                        slice_sample(n=1665)
+  group_by(president_name) %>%
+  slice_sample(n=1665)
 
-table(bag_of_words_grouped$president_name)
-      
+table(bag_of_words_4_pres$president_name)
+
+## Remove zero columns
+
+zero_columns <- apply(bag_of_words_4_pres, 2, function(col) all(col == 0))
+
+# Remove columns with all zeros
+bag_of_words_final <- bag_of_words_4_pres[, !zero_columns]
+
 #bag_of_words_grouped <- bag_of_words_4_pres %>%
- # group_by(president_name) %>%
-  #slice(sample(n(), 200, replace = FALSE))
+# group_by(president_name) %>%
+#slice(sample(n(), 200, replace = FALSE))
 
 ## Now to make training, validation and test sets. 
 set.seed(2023)
-training_ids = bag_of_words_4_pres %>%
-                group_by(president_name) %>%
-                slice_sample(prop = 0.7) %>%
-                ungroup() %>%
-                select(sentence_id)
+training_ids = bag_of_words_final %>%
+  group_by(president_name) %>%
+  slice_sample(prop = 0.7) %>%
+  ungroup() %>%
+  select(sentence_id)
 
-training_data <- bag_of_words_4_pres %>% 
+training_data <- bag_of_words_final %>% 
   right_join(training_ids, by = 'sentence_id') %>%
   select(-sentence_id)
 
-test_data <- bag_of_words_4_pres %>% 
+test_data <- bag_of_words_final %>% 
   anti_join(training_ids, by = 'sentence_id') %>%
   select(-sentence_id)
 
 fit <- rpart(president_name ~ ., training_data, method = 'class')
-  
+
 # options(repr.plot.width = 12, repr.plot.height = 10) # set plot size in the notebook
 plot(fit, main = 'Full Classification Tree')
 text(fit, use.n = TRUE, all = TRUE, cex=.8)
@@ -183,7 +197,7 @@ round(sum(diag(predtest))/sum(predtest), 3) # test accuracy
 
 
 ### ============ TFIDF ============
-  
+
 ndocs <- length(unique(sentence_word_links$sentence_id))
 
 idf <- sentence_word_links%>% 
@@ -210,11 +224,17 @@ sentence_tdf %>% filter(sentence_id == random_sentence) %>% arrange() # check sa
 
 
 # TREE with TFIDF 
+## CHECK if deklerk and mothahle words are here 
 
 tfidf <- sentence_tdf %>% 
   select(sentence_id, word, tf_idf) %>%  # note the change, using tf-idf
   pivot_wider(names_from = word, values_from = tf_idf, values_fill = 0) %>%  
   left_join(sona_sentences_cleaned %>% select(sentence_id,president_name))
+
+zero_columns <- apply(tfidf, 2, function(col) all(col == 0))
+
+# Remove columns with all zeros
+tfidf <- tfidf[, !zero_columns]
 
 training_data <- tfidf %>% 
   right_join(training_ids, by = 'sentence_id') %>%
