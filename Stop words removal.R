@@ -260,3 +260,7 @@ fittedtest <- predict(fit,newdata=test_data,type='class')
 predtest <- table(test_data$president_name,fittedtest)
 predtest
 round(sum(diag(predtest))/sum(predtest), 3) # test accuracy
+
+
+
+

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>A Quarto Website, PLMAND002 - Assignment 1: Predict-the-President - Report</title>
+<title>PLMAND002 - Assignment 1: Report</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -71,7 +71,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">A Quarto Website, PLMAND002</span>
+    <span class="navbar-title">PLMAND002</span>
     </a>
   </div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -84,8 +84,8 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./addition.html" aria-current="page">
- <span class="menu-text">Assignment 1: Predict-the-President - Report</span></a>
+    <a class="nav-link active" href="./report.html" aria-current="page">
+ <span class="menu-text">Assignment 1: Report</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./Appendix.html">
@@ -102,14 +102,23 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#data-cleaning-and-tokenization" id="toc-data-cleaning-and-tokenization" class="nav-link" data-scroll-target="#data-cleaning-and-tokenization">Data Cleaning and Tokenization</a></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">Exploratory Data Analysis</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Assignment 1: Predict-the-President - Report</h1>
+<h1 class="title">Assignment 1: Report</h1>
 </div>
 
 
@@ -124,9 +133,64 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>This page will contain the main report of the project.</p>
+<section id="abstract" class="level2">
+<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>The aim of this assignment is to ‘predict the president’. The data set given is a collection of 36 State of the Nation speeches in South Africa, delivered between 1994 and 2022. The aim of the assignment is to ‘predict the president’ by building a model that takes in as a input a particular sentences and returns a prediction of which president said the sentence. The assignment thus focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks. GIVE OUTLINE OF ASSIGNMENT AND WHERE TO FROM HERE</p>
+<div class="cell" data-messages="false">
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.4
+✔ ggplot2   3.4.3     ✔ stringr   1.5.0
+✔ lubridate 1.9.3     ✔ tibble    3.2.1
+✔ purrr     1.0.1     ✔ tidyr     1.3.0
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the ]8;;http://conflicted.r-lib.org/conflicted package]8;; to force all conflicts to become errors</code></pre>
+</div>
+</div>
+</section>
+<section id="data-cleaning-and-tokenization" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning-and-tokenization">Data Cleaning and Tokenization</h2>
+<p>Explain what cleaning is done and what tokenization is.</p>
+<div class="cell">
+
+</div>
+</section>
+<section id="exploratory-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
+<p>The first step of the process is to perform some exploratory data to understand what the data looks like and how to proceed with building predictive models. The data is made up of 36 speeches delivered between 1994 and 2022. There are 6 different presidents who delivered these speeches, namely Mandela, de Klerk, Mbkei, Zuma, Motlanthe and Ramaphosa. Some exploration is reuired to check how imbalanced these classes are in terms of how many sentences are linked with each president. Table 1 below indicates the number of sentences associated with each president. It is clear that de Klerk and Motlanthe have much fewer associated sentences, this is expected as each of them only delivered one speech. Because of this, de Klerk and Motlanthe are removed from the analysis. The remaining four classes and still imbalanced with Mandela having the fewest sentences with 1665. To account for this all classes are made to have 1665 sentences and this is done by sampling without replacement 1665 sentences from the remaining three presidents, Mbeki, Zuma and Ramaphosa.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Mandela"   "deKlerk"   "Mbeki"     "Zuma"      "Motlanthe" "Ramaphosa"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  deKlerk   Mandela     Mbeki Motlanthe Ramaphosa      Zuma 
+       97      1665      2419       266      2286      2656 </code></pre>
+</div>
+</div>
+<p>Having balanced classes and clean data - can now move to creating a bag of words format</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

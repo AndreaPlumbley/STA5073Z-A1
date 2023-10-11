@@ -1,10 +1,19 @@
 ---
-title: "Assignment 1: Predict-the-President - Report"
+title: "Assignment 1: Report"
 ---
 
-This page will contain the main report of the project. But for now some rough code and ideas. 
+## Abstract
 
-```{r, messages=FALSE, warnings = FALSE}
+
+## Introduction
+
+The aim of this assignment is to 'predict the president'. The data set given is a collection of 36 State of the Nation speeches in South Africa, delivered between 1994 and 2022. The aim of the assignment is to 'predict the president' by building a model that takes in as a input a particular sentences and returns a prediction of which president said the sentence. The assignment thus focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks. 
+GIVE OUTLINE OF ASSIGNMENT AND WHERE TO FROM HERE
+
+
+```{r, echo=FALSE, messages=FALSE, warning=FALSE}
+## LOAD IN THE DATA
+
 # Required libraries
 library(dplyr)
 library(tidyverse)
@@ -13,14 +22,8 @@ library(lubridate)
 library(stringr)
 library(rpart)
 
-set.seed(2023)
-```
 
-
-
-
-```{r, echo = FALSE}
-## Read the data in: code given. 
+## Read the data in: code given by Ian  
 
 # read in text data files and organise these into a data frame
 filenames <- c('1994_post_elections_Mandela.txt', '1994_pre_elections_deKlerk.txt', '1995_Mandela.txt', '1996_Mandela.txt', '1997_Mandela.txt', '1998_Mandela.txt', 
@@ -95,127 +98,61 @@ sona <-sona %>%
          ,date = str_replace_all(date, '--', '')
   )
 
-sona = sona[,2:5]
 ```
 
-Parse data into sentences:
 
-```{r}
+## Data Cleaning and Tokenization
+Explain what cleaning is done and what tokenization is. 
+
+```{r, echo=FALSE}
+sona = sona[,2:5]
+
 ## Parse into sentences 
 sona_sentences = unnest_tokens(sona, sentence, speech, token="sentences") %>%
-                  mutate(sentence_id = row_number()) %>% 
-                  rename(president_name = president_13)
+  mutate(sentence_id = row_number()) %>% 
+  rename(president_name = president_13)
 
-sona_words = sona_sentences %>% unnest_tokens(word, sentence, token = "words")
-```
-
-
-Some more cleaning:
-```{r}
+#some cleaning
 replace_reg = '(https?:.*?(\\s|.$))|(www.*?(\\s|.$))|&amp;|&lt;|&gt|\\*|\\(|\\)|\\"|\\“|\\”|\\¦|\\[|\\]|\\>|\\¬|\\.|\\�'
-sent_president_cleaned = sentence_president %>% 
-                          mutate(sentences =str_replace_all(sentence_president$sentence, replace_reg, ''))   %>%                            select(sentences, president_name) %>% 
-                          mutate(sentence_ID = row_number())
+
+sona_sentences_cleaned = sona_sentences %>% 
+  mutate(sentences =str_replace_all(sona_sentences$sentence, replace_reg, ''))  %>%
+  select(-sentence)
+
+#sona_words = sona_sentences_cleaned %>% 
+#  unnest_tokens(word, sentences, token = "words")
 ```
 
-What to do with numbers and contractions. 
 
-But need to keep track of what sentence each word was a part of maybe 
+## Exploratory Data Analysis  
 
-```{r}
-words_presi_cleaned = unnest_tokens(sent_president_cleaned, word, sentences, token="words") %>% select(sentence_ID, everything())
+The first step of the process is to perform some exploratory data to understand what the data looks like and how to proceed with building predictive models. The data is made up of 36 speeches delivered between 1994 and 2022. There are 6 different presidents who delivered these speeches, namely Mandela, de Klerk, Mbkei, Zuma, Motlanthe and Ramaphosa. Some exploration is reuired to check how imbalanced these classes are in terms of how many sentences are linked with each president. Table 1 below indicates the number of sentences associated with each president. It is clear that de Klerk and Motlanthe have much fewer associated sentences, this is expected as each of them only delivered one speech. Because of this, de Klerk and Motlanthe are removed from the analysis. The remaining four classes and still imbalanced with Mandela having the fewest sentences with 1665. To account for this all classes are made to have 1665 sentences and this is done by sampling without replacement 1665 sentences from the remaining three presidents, Mbeki, Zuma and Ramaphosa. 
 
-testing = words_presi_cleaned %>% group_by(president_name)%>%slice_sample(n=100)
-```
+\begin{center}
+\begin{tabular}{ |c| c| c|c|c|c| }
+ de Klerk & Mandela & Mbeki & Motlanthe & Ramaphosa & Zuma \\ 
+ 97 & 1665 & 2419 & 266 & 2286 & 2656   
+\end{tabular}
+\end{center}
+ 
 
-```{r}
-## Trying to figure out bag of words 
+```{r, echo = FALSE}
+unique(sona_sentences$president_name)
+table(sona_sentences$president_name)
 
-##Give words and sentence id separtely before doing word bag
-
-all_words = sona_words %>%
-            group_by(word) %>%
-            count(sort=T) %>%
-            ungroup()
-
-#must rename
-sentence_word_links = sona_words %>%
-                        inner_join(all_words) %>%
-                        group_by(sentence_id, word) %>%
-                        count() %>%
-                        group_by(sentence_id) %>%
-                        mutate(total = sum(n)) %>%
-                        ungroup()
-                
-
-bag_of_words <- sentence_word_links %>% 
-                select(sentence_id, word, n) %>% 
-                pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
-                left_join(sona_words %>% select(sentence_id, president_name)) %>%
-                select(sentence_id, president_name, everything())
-
-# number of sentences
-nrow(bag_of_words)
-
-
-table(bag_of_words$president_name)
-
-
-bag_of_words_4_pres = bag_of_words %>% filter(president_name=="Mandela"|
-                                             president_name=="Mbeki"|
-                                             president_name=="Zuma"|
-                                             president_name== "Ramaphosa")
-
-table(bag_of_words_4_pres$president_name)
-
-aaa = bag_of_words %>% slice_sample(n = 50)
-
-bag_of_words_grouped <- bag_of_words_4_pres %>%
-  group_by(president_name) %>%
-  sample_n(100) %>%
-  ungroup()
-
-
-BOW_Mandela = bag_of_words_4_pres[,bag_of_words_4_pres$president_name=="Mandela"]
-
-## do it yourself :(
-```
-
-What to do with imbalanced classes??
-
-
-```{r}
+sona_sentences_4 = sona_sentences %>% 
+  filter(president_name=="Mandela"|
+           president_name=="Mbeki"|
+           president_name=="Zuma"|
+           president_name== "Ramaphosa")
 
 set.seed(2023)
+sona_sentences_4_balanced = sona_sentences_4 %>%
+                              group_by(president_name) %>%
+                              slice_sample(n=1665)
 
-training_ids <- bag_of_words %>% 
-  group_by(president_name) %>% 
-  slice_sample(prop = 0.7) %>% 
-  ungroup() %>%
-  select(sentence_ID)
+## table(sona_sentences_4_balanced$president_name)
 
-training_tweets <- bag_of_words %>% 
-  right_join(training_ids, by = 'sentence_ID') %>%
-  select(-sentence_ID)
-
-test_tweets <- bag_of_words %>% 
-  anti_join(training_ids, by = 'sentence_ID') %>%
-  select(-sentence_ID)
 ```
 
-```{r}
-fit = rpart(president~., bag_of_words_4_pres[,-1], method = "class")
-
-# options(repr.plot.width = 12, repr.plot.height = 10) # set plot size in the notebook
-plot(fit, main = 'Full Classification Tree')
-text(fit, use.n = TRUE, all = TRUE, cex=.8)
-
-fittedtrain <- predict(fit, type = 'class')
-predtrain <- table(bag_of_words_4_pres$president, fittedtrain)
-predtrain
-
-round(sum(diag(predtrain))/sum(predtrain), 3)
-```
-
-
-
+Having balanced classes and clean data - can now move to creating a bag of words format
