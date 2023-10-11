@@ -1,5 +1,8 @@
 ---
 title: "Assignment 1: Report"
+author: "Andrea Plumbley"
+header-includes:
+  - \usepackages{amsmath}
 ---
 
 ## Abstract
@@ -134,9 +137,13 @@ The first step of the process is to perform some exploratory data to understand 
  97 & 1665 & 2419 & 266 & 2286 & 2656   
 \end{tabular}
 \end{center}
+
+| de Klerk | Mandela | Mbeki | Motlanthe | Ramaphosa | Zuma |
+|----------|---------|-------|-----------|-----------|------|
+| 97       | 1665    |2419   |266        |2286       |2656  |
  
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, include = FALSE}
 unique(sona_sentences$president_name)
 table(sona_sentences$president_name)
 
