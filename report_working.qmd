@@ -1,0 +1,612 @@
+---
+title: "Assignment 1: Report"
+author: "Andrea Plumbley"
+header-includes:
+  - \usepackages{amsmath}
+---
+
+## Abstract
+
+## Introduction
+
+The aim of this assignment is to 'predict the president'. The data set given is a collection of 36 State of the Nation speeches in South Africa, delivered between 1994 and 2022. The aim of the assignment is to 'predict the president' by building a model that takes in as a input a particular sentences and returns a prediction of which president said the sentence. The assignment thus focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks. A brief literature review is first given. Following this the data cleaning and exploration will be detailed and key features of the data discussed. The methods used to construct the different predictive models as well as format the data will then outline. Results of the different predictive models will be presented and discussed and final conclusions made.
+
+## Literature Review
+
+```{r, echo=FALSE, messages=FALSE, warning=FALSE, include=FALSE}
+## LOAD IN THE DATA
+set.seed(2023)
+# Required libraries
+library(dplyr)
+library(tidyverse)
+library(tidytext)
+library(lubridate)
+library(stringr)
+library(rpart)
+library(reticulate)
+library(tensorflow)
+library(keras)
+
+## Read the data in: code given by Ian  
+
+# read in text data files and organise these into a data frame
+filenames <- c('1994_post_elections_Mandela.txt', '1994_pre_elections_deKlerk.txt', '1995_Mandela.txt', '1996_Mandela.txt', '1997_Mandela.txt', '1998_Mandela.txt', 
+               '1999_post_elections_Mandela.txt', '1999_pre_elections_Mandela.txt', '2000_Mbeki.txt', '2001_Mbeki.txt', '2002_Mbeki.txt', '2003_Mbeki.txt', 
+               '2004_post_elections_Mbeki.txt', '2004_pre_elections_Mbeki.txt', '2005_Mbeki.txt', '2006_Mbeki.txt', '2007_Mbeki.txt', '2008_Mbeki.txt', 
+               '2009_post_elections_Zuma.txt', '2009_pre_elections_ Motlanthe.txt', '2010_Zuma.txt', '2011_Zuma.txt', '2012_Zuma.txt', '2013_Zuma.txt', 
+               '2014_post_elections_Zuma.txt', '2014_pre_elections_Zuma.txt', '2015_Zuma.txt', '2016_Zuma.txt', '2017_Zuma.txt', '2018_Ramaphosa.txt', 
+               '2019_post_elections_Ramaphosa.txt', '2019_pre_elections_Ramaphosa.txt', '2020_Ramaphosa.txt', '2021_Ramaphosa.txt', '2022_Ramaphosa.txt', '2023_Ramaphosa.txt')
+
+
+this_speech <- c()
+this_speech[1] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/1994_post_elections_Mandela.txt', nchars = 27050)
+this_speech[2] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/1994_pre_elections_deKlerk.txt', nchars = 12786)
+this_speech[3] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/1995_Mandela.txt', nchars = 39019)
+this_speech[4] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/1996_Mandela.txt', nchars = 39524)
+this_speech[5] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/1997_Mandela.txt', nchars = 37489)
+this_speech[6] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/1998_Mandela.txt', nchars = 45247)
+this_speech[7] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/1999_post_elections_Mandela.txt', nchars = 34674)
+this_speech[8] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/1999_pre_elections_Mandela.txt', nchars = 41225)
+this_speech[9] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2000_Mbeki.txt', nchars = 37552)
+this_speech[10] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2001_Mbeki.txt', nchars = 41719)
+this_speech[11] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2002_Mbeki.txt', nchars = 50544)
+this_speech[12] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2003_Mbeki.txt', nchars = 58284)
+this_speech[13] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2004_post_elections_Mbeki.txt', nchars = 34590)
+this_speech[14] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2004_pre_elections_Mbeki.txt', nchars = 39232)
+this_speech[15] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2005_Mbeki.txt', nchars = 54635)
+this_speech[16] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2006_Mbeki.txt', nchars = 48643)
+this_speech[17] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2007_Mbeki.txt', nchars = 48641)
+this_speech[18] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2008_Mbeki.txt', nchars = 44907)
+this_speech[19] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2009_post_elections_Zuma.txt', nchars = 31101)
+this_speech[20] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2009_pre_elections_Motlanthe.txt', nchars = 47157)
+this_speech[21] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2010_Zuma.txt', nchars = 26384)
+this_speech[22] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2011_Zuma.txt', nchars = 33281)
+this_speech[23] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2012_Zuma.txt', nchars = 33376)
+this_speech[24] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2013_Zuma.txt', nchars = 36006)
+this_speech[25] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2014_post_elections_Zuma.txt', nchars = 29403)
+this_speech[26] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2014_pre_elections_Zuma.txt', nchars = 36233)
+this_speech[27] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2015_Zuma.txt', nchars = 32860)
+this_speech[28] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2016_Zuma.txt', nchars = 32464)
+this_speech[29] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2017_Zuma.txt', nchars = 35981)
+this_speech[30] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2018_Ramaphosa.txt', nchars = 33290)
+this_speech[31] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2019_post_elections_Ramaphosa.txt', nchars = 42112)
+this_speech[32] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2019_pre_elections_Ramaphosa.txt', nchars = 56960)
+this_speech[33] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2020_Ramaphosa.txt', nchars = 47910)
+this_speech[34] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2021_Ramaphosa.txt', nchars = 43352)
+this_speech[35] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2022_Ramaphosa.txt', nchars = 52972)
+this_speech[36] <- readChar('https://raw.githubusercontent.com/iandurbach/datasci-fi/master/data/sona/2022_Ramaphosa.txt', nchars = 52972)
+
+sona <- data.frame(filename = filenames, speech = this_speech, stringsAsFactors = FALSE)
+
+# extract year and president for each speech
+sona$year <- str_sub(sona$filename, start = 1, end = 4)
+sona$president_13 <- str_remove_all(str_extract(sona$filename, "[dA-Z].*\\."), "\\.")
+
+# clean the sona dataset by adding the date and removing unnecessary text
+replace_reg <- '(http.*?(\\s|.$))|(www.*?(\\s|.$))|&amp;|&lt;|&gt;|\n'
+
+sona <-sona %>%
+  mutate(speech = str_replace_all(speech, replace_reg , ' ')
+         ,date = str_sub(speech, start=1, end=30)
+         ,date = str_replace_all(date, "February", "02")
+         ,date = str_replace_all(date, "June", "06")
+         ,date = str_replace_all(date, "Feb", "02")
+         ,date = str_replace_all(date, "May", "05")
+         ,date = str_replace_all(date, "Jun", "06")
+         ,date = str_replace_all(date, "Thursday, ","")
+         ,date = str_replace_all(date, ' ', '-')        
+         ,date = str_replace_all(date, "[A-z]",'')
+         ,date = str_replace_all(date, '-----', '')
+         ,date = str_replace_all(date, '----', '')
+         ,date = str_replace_all(date, '---', '')
+         ,date = str_replace_all(date, '--', '')
+  )
+
+```
+
+## Data Cleaning, Tokenization, and Exploration
+
+The data that is used in this particular problem are the State of the Nation speeches in South Africa from 1994 to 2022. There a 36 speeches given by 6 different presidents, namely Mandela, de Klerk, Mbkei, Zuma, Motlanthe and Ramaphosa.. The initial steps in the solving the predict the president problem is to break the speeches up into their indivudal sentences and remove any unwanted characters, numbers or punctuation marks. The speeches were tokenized, broken up into smaller parts, using the unnest_tokens function in R. Each speech was split up into its sentences and the new data structure included the sentence along with the president who said it. For modelling purposes the sentences need to be only made up of their words so that when each sentence is tokenized into words, punctuation marks and numbers are not recognized as individual words. In order to do this the str_replace_all() function in the stringr package was used in order to remove any unwanted characters which were specified using a regual expression (regex). Number, commas, question marks and exclamation marks are some examples of the characters that were removed from analysis.
+
+Some exploration is reuired to check how imbalanced these classes are in terms of how many sentences are linked with each president. Table 1 below indicates the number of sentences associated with each president. It is clear that de Klerk and Motlanthe have much fewer associated sentences, this is expected as each of them only delivered one speech. Because of this large discrepancy in number of sentences, de Klerk and Motlanthe are removed from the analysis. The remaining four classes are still imbalanced with Mandela having the fewest sentences with 1665. To account for this all classes are made to have 1665 sentences and this is done by sampling without replacement 1665 sentences from the remaining three presidents: Mbeki, Zuma and Ramaphosa.
+
+*Table 1: Number of sentences by each president.*
+
+| de Klerk | Mandela | Mbeki | Motlanthe | Ramaphosa | Zuma |
+|----------|---------|-------|-----------|-----------|------|
+| 97       | 1665    | 2419  | 266       | 2286      | 2656 |
+
+Having split the speeches up into sentences and removed the unwanted characters and balancing the number of sentences per president, each sentence could then be tokenized into its individual words. The sentences need to be broken down into words in order to create bag of words data structures which will be used in the predictive models.
+
+```{r, echo=FALSE}
+sona = sona[,2:5]
+
+## Parse into sentences 
+sona_sentences = unnest_tokens(sona, sentence, speech, token="sentences") %>%
+  rename(president_name = president_13)
+
+#some cleaning
+replace_reg = '(https?:.*?(\\s|.$))|(www.*?(\\s|.$))|&amp;|&lt;|&gt|\\*|\\(|\\)|\\"|\\“|\\”|\\¦|\\[|\\]|\\>|\\¬|\\.|\\�'
+
+sona_sentences_cleaned = sona_sentences %>% 
+  mutate(sentences =str_replace_all(sona_sentences$sentence, replace_reg, ''))  %>%
+  select(-sentence)
+
+#sona_words = sona_sentences_cleaned %>% 
+#  unnest_tokens(word, sentences, token = "words")
+```
+
+```{r, echo = FALSE, include = FALSE}
+unique(sona_sentences_cleaned$president_name)
+table(sona_sentences_cleaned$president_name)
+
+sona_sentences_4 = sona_sentences_cleaned %>% 
+  filter(president_name=="Mandela"|
+           president_name=="Mbeki"|
+           president_name=="Zuma"|
+           president_name== "Ramaphosa")
+
+set.seed(2023)
+sona_sentences_4_balanced = sona_sentences_4 %>%
+                              group_by(president_name) %>%
+                              slice_sample(n=1665)  %>%
+                              ungroup()
+sona_sentences_FINAL = sona_sentences_4_balanced %>%
+                        mutate(sentence_ID = row_number())
+                              
+table(sona_sentences_4_balanced$president_name)
+
+```
+
+Again the unnest_tokens() function is used to break the sentences up into words where each word is now associated with a president and sentence number in order to keep track of which words belong in which sentences and who said them.
+
+Stop words are then removed.
+
+Then bag of words format created
+
+Then tfidf format created
+
+What about top 200 words.
+
+```{r, echo =FALSE}
+
+## Tokenize into words
+sona_words = sona_sentences_FINAL %>% 
+  unnest_tokens(word, sentences, token = "words")
+
+all_words = sona_words %>%
+  group_by(word) %>%
+  count() %>%
+  ungroup()
+
+## Take out number or words with fewer than 3 letters
+all_words_cleaned = all_words %>%
+                    filter(!str_detect(word, "\\d")) %>%
+                    filter(str_length(word) > 2)
+
+## Remove stop words
+stopwords = stop_words$word
+all_words_final = anti_join(all_words_cleaned, stop_words, by = "word")
+
+sentence_word_links = sona_words %>%
+  inner_join(all_words_final) %>%
+  group_by(sentence_ID, word) %>%
+  count() %>%
+  group_by(sentence_ID) %>%
+  mutate(total = sum(n)) %>%
+  ungroup()
+
+bag_of_words = sentence_word_links %>% 
+  select(sentence_ID, word, n) %>% 
+  pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
+  left_join(sona_sentences_FINAL %>% select(sentence_ID, president_name)) %>%
+  select(sentence_ID, president_name, everything())
+
+# Remove columns with all zeros
+# zero_columns <- apply(bag_of_words, 2, function(col) all(col == 0))
+# bag_of_words = bag_of_words[,!zero_columns]
+```
+
+We now have our bag of words each associated with a sentence ID and president name. This bag of words is word counts we also need to set up tfidf.
+
+TFIDF
+
+```{r, echo = FALSE}
+ndocs <- length(unique(sentence_word_links$sentence_ID))
+
+idf <- sentence_word_links%>% 
+  group_by(word) %>% 
+  summarize(docs_with_word = n()) %>% 
+  ungroup() %>%
+  mutate(idf = log(ndocs / docs_with_word)) %>% arrange(desc(idf))
+
+sentence_tdf <- sentence_word_links%>% 
+  left_join(idf, by = 'word') %>% 
+  mutate(tf = n/total, tf_idf = tf * idf)
+
+sentence_tdf <- sentence_tdf %>% 
+  select(-idf, -tf, -tf_idf) %>% #remove the old ones we worked out
+  bind_tf_idf(word, sentence_ID, n)   #replace with values from tidytext
+
+
+# TREE with TFIDF 
+## CHECK if deklerk and mothahle words are here 
+
+tfidf <- sentence_tdf %>% 
+  select(sentence_ID, word, tf_idf) %>%  # note the change, using tf-idf
+  pivot_wider(names_from = word, values_from = tf_idf, values_fill = 0) %>%  
+  left_join(sona_sentences_FINAL %>% select(sentence_ID,president_name)) %>%
+  select(sentence_ID, president_name, everything())
+```
+
+Now have bag of words with counts and with TFIDF
+
+Need to add one where we only consider top 500 words said by each president.
+
+```{r, echo=FALSE}
+## Testing out using top 200 words said by each president.
+
+each_president_common_words = sona_words %>%
+                             group_by(president_name) %>%
+                              count(word, sort=TRUE) %>%
+                              ungroup()
+
+## remove numbers here
+
+common_words_remove_stop = anti_join(each_president_common_words, stop_words, by='word')
+
+common_words_remove_stop_final = common_words_remove_stop %>%
+                                  group_by(president_name) %>%
+                                  filter(rank(desc(n)) <= 200) 
+
+sentence_word_links_common_words = sentence_word_links %>%
+                                    filter(word %in% common_words_remove_stop_final$word)
+
+#sort(unique(common_words_remove_stop_final$word))
+#sort(unique(sentence_word_links_common_words$word))
+
+## NEED SOME EDA PLOTS
+bag_of_words_200 = sentence_word_links_common_words %>% 
+  select(sentence_ID, word, n) %>% 
+  pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
+  left_join(sona_sentences_FINAL %>% select(sentence_ID, president_name)) %>%
+  select(sentence_ID, president_name, everything())
+
+## Do TFIDF with 200 words
+
+ndocs_2 <- length(unique(sentence_word_links_common_words$sentence_ID))
+
+idf_common <- sentence_word_links_common_words%>% 
+  group_by(word) %>% 
+  summarize(docs_with_word = n()) %>% 
+  ungroup() %>%
+  mutate(idf = log(ndocs_2 / docs_with_word)) %>% arrange(desc(idf))
+
+sentence_tdf_common <- sentence_word_links_common_words%>% 
+  left_join(idf, by = 'word') %>% 
+  mutate(tf = n/total, tf_idf = tf * idf)
+
+sentence_tdf_common <- sentence_tdf_common %>% 
+  select(-idf, -tf, -tf_idf) %>% #remove the old ones we worked out
+  bind_tf_idf(word, sentence_ID, n)   #replace with values from tidytext
+
+
+# TREE with TFIDF 
+## CHECK if deklerk and mothahle words are here 
+
+tfidf_common <- sentence_tdf_common %>% 
+  select(sentence_ID, word, tf_idf) %>%  # note the change, using tf-idf
+  pivot_wider(names_from = word, values_from = tf_idf, values_fill = 0) %>%  
+  left_join(sona_sentences_FINAL %>% select(sentence_ID,president_name)) %>%
+  select(sentence_ID, president_name, everything())
+
+```
+
+## Training, Validation and Test splits
+
+Now need to create training, validation and test splits with the data - by president so that classes are balanced.
+
+Training = 60% Validation = 30% Test = 10%
+
+```{r, echo = FALSE}
+set.seed(2023)
+
+sentences_ids = data.frame(sentence_ID = (bag_of_words$sentence_ID))
+N = nrow(sentences_ids)
+
+train_size = round(N*0.6)
+val_size = round(N*0.3)
+test_size = N - train_size - val_size
+
+train_ids = data.frame(sentence_ID = sample(sentences_ids[,1], size = train_size, replace = FALSE))
+
+remaining_ids = sentences_ids %>% anti_join(train_ids)
+
+val_ids = data.frame(sentence_ID = sample(remaining_ids[,1], size = val_size, replace = FALSE))
+test_ids = remaining_ids %>% anti_join(val_ids)
+
+```
+
+Now that we have got the ids for the train, validation and test set we can start fitting some models. Starting with a simple classfication tree and using count bag of words.
+
+```{r, echo = FALSE}
+training_data_boW = bag_of_words %>%
+                      right_join(train_ids, by='sentence_ID') %>%
+                      select(-sentence_ID)
+X_train = training_data_boW[,2:ncol(training_data_boW)]
+Y_train = as.factor(training_data_boW$president_name)
+
+
+val_data_boW = bag_of_words %>%
+                  right_join(val_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_val = val_data_boW[,2:ncol(val_data_boW)]
+Y_val = as.factor(val_data_boW$president_name)
+
+test_data_boW = bag_of_words %>%
+                  right_join(test_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_test = test_data_boW[,2:ncol(test_data_boW)]
+Y_test = as.factor(test_data_boW$president_name)
+
+
+training = cbind(Y_train, X_train)
+fit <- rpart(Y_train ~ ., training, method = 'class')
+
+# options(repr.plot.width = 12, repr.plot.height = 10) # set plot size in the notebook
+plot(fit, main = 'Full Classification Tree')
+text(fit, use.n = TRUE, all = TRUE, cex=.8)
+
+fittedtrain <- predict(fit, type = 'class')
+predtrain <- table(training$Y_train, fittedtrain)
+predtrain
+round(sum(diag(predtrain))/sum(predtrain), 3) # training accuracy
+
+fittedtest <- predict(fit, newdata = cbind(Y_val, X_val), type = 'class')
+predtest <- table(Y_val, fittedtest)
+predtest
+round(sum(diag(predtest))/sum(predtest), 3) # test accuracy
+
+```
+
+Clearly the classification tree is not doing very well on word counts bag of words model. What about tfidf
+
+```{r, echo = FALSE}
+training_data_tfidf = tfidf %>%
+                      right_join(train_ids, by='sentence_ID') %>%
+                      select(-sentence_ID)
+X_train = training_data_tfidf[,2:ncol(training_data_tfidf)]
+Y_train = as.factor(training_data_tfidf$president_name)
+
+
+val_data_tfidf = tfidf %>%
+                  right_join(val_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_val = val_data_tfidf[,2:ncol(val_data_tfidf)]
+Y_val = as.factor(val_data_tfidf$president_name)
+
+test_data_tfidf = tfidf %>%
+                  right_join(test_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_test = test_data_tfidf[,2:ncol(test_data_tfidf)]
+Y_test = as.factor(test_data_tfidf$president_name)
+
+
+training = cbind(Y_train, X_train)
+fit <- rpart(Y_train ~ ., training, method = 'class')
+
+# options(repr.plot.width = 12, repr.plot.height = 10) # set plot size in the notebook
+plot(fit, main = 'Full Classification Tree')
+text(fit, use.n = TRUE, all = TRUE, cex=.8)
+
+fittedtrain <- predict(fit, type = 'class')
+predtrain <- table(training$Y_train, fittedtrain)
+predtrain
+round(sum(diag(predtrain))/sum(predtrain), 3) # training accuracy
+
+fittedtest <- predict(fit, newdata = cbind(Y_val, X_val), type = 'class')
+predtest <- table(Y_val, fittedtest)
+predtest
+round(sum(diag(predtest))/sum(predtest), 3) # test accuracy
+
+```
+
+```{r, echo = FALSE, eval = FALSE}
+training_data_tfidf_common = tfidf_common %>%
+                      right_join(train_ids, by='sentence_ID') %>%
+                      select(-sentence_ID)
+X_train_common = training_data_tfidf_common[,2:ncol(training_data_tfidf_common)]
+Y_train_common = as.factor(training_data_tfidf_common$president_name)
+
+
+val_data_tfidf_common = tfidf_common %>%
+                  right_join(val_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_val_common = val_data_tfidf[,2:ncol(val_data_tfidf)]
+Y_val_common = as.factor(val_data_tfidf_common$president_name)
+
+test_data_tfidf_common = tfidf_common %>%
+                  right_join(test_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_test = test_data_tfidf_common[,2:ncol(test_data_tfidf_common)]
+Y_test = as.factor(test_data_tfidf_common$president_name)
+
+
+training = cbind(Y_train_common, X_train_common)
+fit <- rpart(Y_train_common ~ ., training, method = 'class')
+
+# options(repr.plot.width = 12, repr.plot.height = 10) # set plot size in the notebook
+plot(fit, main = 'Full Classification Tree')
+text(fit, use.n = TRUE, all = TRUE, cex=.8)
+
+fittedtrain <- predict(fit, type = 'class')
+predtrain <- table(training$Y_train_common, fittedtrain)
+predtrain
+round(sum(diag(predtrain))/sum(predtrain), 3) # training accuracy
+
+fittedtest <- predict(fit, newdata = cbind(Y_val, X_val), type = 'class')
+predtest <- table(Y_val, fittedtest)
+predtest
+round(sum(diag(predtest))/sum(predtest), 3) # test accuracy
+
+```
+
+Clearly the classification tree is not doing well so now we try a neural network.
+
+```{r}
+library(keras)
+      # This may be ruining the run
+      # noticed that after running this, your 
+      # Dimensions don't match up
+
+#zero_columns_train <- apply(X_train, 2, function(col) all(col == 0))
+#X_train = X_train[,!zero_columns_train]
+#X_val = X_val[,!zero_columns_train]
+#X_test = X_test[,!zero_columns_train]
+
+training_data_tfidf = tfidf %>%
+                      right_join(train_ids, by='sentence_ID') %>%
+                      select(-sentence_ID)
+X_train = training_data_tfidf[,2:ncol(training_data_tfidf)]
+Y_train = as.factor(training_data_tfidf$president_name)
+
+
+val_data_tfidf = tfidf %>%
+                  right_join(val_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_val = val_data_tfidf[,2:ncol(val_data_tfidf)]
+Y_val = as.factor(val_data_tfidf$president_name)
+
+test_data_tfidf = tfidf %>%
+                  right_join(test_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_test = test_data_tfidf[,2:ncol(test_data_tfidf)]
+Y_test = as.factor(test_data_tfidf$president_name)
+  # Added this in
+X_train <- as.matrix(X_train)
+X_val <- as.matrix(X_val)
+  # This is how keras takes in one-hot encoding
+Y_train <- to_categorical(as.integer(unlist(Y_train)) - 1)
+Y_val  <- to_categorical(as.integer(unlist(Y_val)) - 1)
+
+model <- keras_model_sequential() %>%
+  layer_dense(units = 100, input_shape = c(9085), activation = "relu") %>%
+  layer_dense(units = 4, activation = "softmax")
+
+summary(model)
+
+model %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+
+history <- model %>% fit(X_train, Y_train, epochs = 40, batch_size = 100, verbose = 0) 
+plot(history)
+
+results <- model %>% evaluate(X_val, Y_val, batch_size=128, verbose = 2)
+
+```
+
+Now lets try a cnn
+
+```{r, echo = FALSE}
+
+max_features <- 1000        # choose max_features most popular words
+tokenizer = text_tokenizer(num_words = max_features)
+fit_text_tokenizer(tokenizer, sona_sentences_FINAL$sentences[4])
+
+
+sona_sentences_FINAL$sentences[4]
+tts <- texts_to_sequences(tokenizer, sona_sentences_FINAL$sentences[4])
+tts
+
+tokenizer$word_index[tts[[1]]]
+
+sequences = tokenizer$texts_to_sequences(sona_sentences_FINAL$sentences)
+
+train_row = train_ids$sentence_ID
+val_row = val_ids$sentence_ID
+
+y = as.factor(sona_sentences_FINAL$president_name)
+y = as.integer(y)
+
+train <- list()
+val <- list()
+train$x <- sequences[train_row]
+val$x <-  sequences[val_row]
+
+train$y <- y[train_row]
+val$y <-  y[val_row]
+
+hist(unlist(lapply(sequences, length)), main = "Sequence length after tokenization")
+
+maxlen <- 15            
+x_train <- train$x %>% pad_sequences(maxlen = maxlen)
+x_test <- val$x %>% pad_sequences(maxlen = maxlen)
+
+model <- keras_model_sequential() %>% 
+  layer_embedding(max_features, output_dim = 10, input_length = maxlen) %>%
+  layer_dropout(0.2) %>%
+  layer_flatten() %>%
+  layer_dense(100, activation = "relu") %>%
+  layer_dense(4, activation = "softmax")
+
+summary(model)
+
+model %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+
+history <- model %>% fit(x_train,Y_train,
+    batch_size = 600, epochs = 30, verbose = 0)
+plot(history)
+
+```
+
+```{r}
+embedding_dims <- 10
+model <- keras_model_sequential() %>% 
+  layer_embedding(max_features, output_dim = embedding_dims, input_length = maxlen) %>%
+  layer_dropout(0.2) %>%
+  layer_conv_1d(filters = 64, kernel_size = 8, activation = "relu") %>%
+  layer_max_pooling_1d(pool_size = 2) %>%
+  layer_flatten() %>%
+  layer_dense(300, activation = "relu") %>%
+  layer_dense(4, activation = "softmax")
+
+summary(model)
+
+model %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+
+history <- model %>% fit(x_train,Y_train,
+    batch_size = 600, epochs = 30, verbose = 0)
+plot(history)
+
+results <- model %>% evaluate(x_test, Y_val, batch_size=600, verbose = 2)
+```
+
+Lets try random forest with tfidf
+
+```{r, eval = FALSE}
+library(ranger)
+
+X_tfidf = tfidf[,3:ncol(tfidf)]
+X_tfidf_train = X_tfidf[train_ids$sentence_ID,]
+
+
+Y_train_forest = (tfidf[train_ids$sentence_ID,2])
+
+# Assuming your response variable is in 'y' and your bag of words matrix is in 'X'
+model <- ranger(tfidf[train_ids$sentence_ID,2], tfidf[train_ids$sentence_ID,-c(2)], num.trees = 100, importance = "permutation")
+
+
+```
+
+What about multinomial logistic regression?
