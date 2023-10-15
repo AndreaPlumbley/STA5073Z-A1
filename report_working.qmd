@@ -942,7 +942,7 @@ results3.2_200 <- model3 %>% evaluate(X_val_200_tfidf, Y_val, batch_size=200, ve
 | NN2 Validation Classification Accuracy | `r as.matrix(results2.2)[2]` | `r as.matrix(results2.1)[2]` | `r as.matrix(results2.2_200)[2]` | `r as.matrix(results2.1_200)[2]` |
 | NN3 Validation Classification Accuracy | `r as.matrix(results3.2)[2]` | `r as.matrix(results3.1)[2]` | `r as.matrix(results3.2_200)[2]` | `r as.matrix(results3.1_200)[2]` |
 
-An improvement is seen for these neural network classification models from the boosted tree models with the models using all words having over 50% classification accuracy. In general the neural networks that use all words perform better at classifying the presidents than the models which use only the top 200 words used by each president. Comparing both input structure that use all words, it can be seen that the TFIDF input structure performs slightly better than the standard counts bag of words input data structure. In terms of the three different network architectures the best network architecture depends on the input data structure used. For the BOW counts data, the NN1 and NN3 have almost the same accuracy with NN2 slightly lower. For the TFIDF data, the simplest neural network performs the best with a classification accuracy of `r as.matrix(results1.1[2]`. The model NN1, with TFIDF data has the highest validation set accuracy and so is selected as the best model.
+An improvement is seen for these neural network classification models from the boosted tree models with the models using all words having over 50% classification accuracy. In general the neural networks that use all words perform better at classifying the presidents than the models which use only the top 200 words used by each president. Comparing both input structure that use all words, it can be seen that the TFIDF input structure performs slightly better than the standard counts bag of words input data structure. In terms of the three different network architectures the best network architecture depends on the input data structure used. For the BOW counts data, the NN1 and NN3 have almost the same accuracy with NN2 slightly lower. For the TFIDF data, the simplest neural network performs the best with a classification accuracy of `r as.matrix(results1.1)[2]`. The model NN1, with TFIDF data has the highest validation set accuracy and so is selected as the best model.
 
 ```{r}
 model1 <- keras_model_sequential() %>%
@@ -1062,7 +1062,7 @@ result_test_CNN = model %>% evaluate(x_test, Y_test, batch_size=200, verbose = 2
 |------------------------|------------------------|------------------------|
 | Validation Classification Accuracy | `r as.matrix(results_CNN1)[2]` | `r as.matrix(results_CNN2)[2]` |
 
-It is clear that the convolutional neural network does not do well at predicting the correct classification with the validation accuracy being the same as a naive prediction guess would be. The test set accuracy for CNN2, which performs only marginally better, is: `r as.matrix(results_test_CNN)[2]` which is very poor predictive performance.
+It is clear that the convolutional neural network does not do well at predicting the correct classification with the validation accuracy being the same as a naive prediction guess would be. The test set accuracy for CNN2, which performs only marginally better, is: `r as.matrix(result_test_CNN)[2]` which is very poor predictive performance.
 
 ```{r, echo = FALSE, eval = FALSE}
 training_data_boW = bag_of_words %>%
