@@ -1,31 +1,35 @@
 ---
 title: "Assignment 1: Report"
 author: "Andrea Plumbley"
-header-includes:
-  - \usepackages{amsmath}
 ---
 
 ## Abstract
 
 ## Introduction
 
-The aim of this assignment is to 'predict the president'. The data set given is a collection of 36 State of the Nation speeches in South Africa, delivered between 1994 and 2022. The aim of the assignment is to 'predict the president' by building a model that takes in as a input a particular sentences and returns a prediction of which president said the sentence. The assignment thus focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks. A brief literature review is first given. Following this the data cleaning and exploration will be detailed and key features of the data discussed. The methods used to construct the different predictive models as well as format the data will then outline. Results of the different predictive models will be presented and discussed and final conclusions made.
+The aim of this assignment is to 'predict the president', to build predictive models that take in a sentence of text from a speech and predict which South African president said it. The data set given is a collection of 36 State of the Nation Addresses (SONA) in South Africa, delivered between 1994 and 2022. The assignment focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks and their classification performance. Before unpacking the data, a brief literature review is first given. Following this the data cleaning and exploration will be detailed and key features of the data discussed. The methods to format the data as well as the training, validation and test data splits will be outlined. The methods used to construct the different predictive models will then be detailed. Following this, results of the different predictive models will be presented and discussed and final conclusions made.
 
 ## Literature Review
+
+A brief summary of the literature on text classification techniques is now presented.
 
 ```{r, echo=FALSE, messages=FALSE, warning=FALSE, include=FALSE}
 ## LOAD IN THE DATA
 set.seed(2023)
 # Required libraries
 library(dplyr)
+library(gghighlight)
 library(tidyverse)
 library(tidytext)
 library(lubridate)
 library(stringr)
 library(rpart)
 library(reticulate)
+library(ggpubr)
 library(tensorflow)
 library(keras)
+library(nnet)
+library(ranger)
 
 ## Read the data in: code given by Ian  
 
@@ -104,13 +108,13 @@ sona <-sona %>%
 
 ```
 
-## Data Cleaning, Tokenization, and Exploration
+## [Data Cleaning, Tokenization, and Exploration]{.underline}
 
-The data that is used in this particular problem are the State of the Nation speeches in South Africa from 1994 to 2022. There a 36 speeches given by 6 different presidents, namely Mandela, de Klerk, Mbkei, Zuma, Motlanthe and Ramaphosa.. The initial steps in the solving the predict the president problem is to break the speeches up into their indivudal sentences and remove any unwanted characters, numbers or punctuation marks. The speeches were tokenized, broken up into smaller parts, using the unnest_tokens function in R. Each speech was split up into its sentences and the new data structure included the sentence along with the president who said it. For modelling purposes the sentences need to be only made up of their words so that when each sentence is tokenized into words, punctuation marks and numbers are not recognized as individual words. In order to do this the str_replace_all() function in the stringr package was used in order to remove any unwanted characters which were specified using a regual expression (regex). Number, commas, question marks and exclamation marks are some examples of the characters that were removed from analysis.
+The data that is used in this particular problem are the State of the Nation Addresses in South Africa from 1994 to 2022. There a 36 speeches given by 6 different presidents, namely Mandela, de Klerk, Mbkei, Zuma, Motlanthe and Ramaphosa. The initial steps in the solving the predict the president problem is to break the speeches up into their individual sentences and remove any unwanted characters, numbers or punctuation marks. The speeches were tokenized, broken up into smaller parts, using the unnest_tokens function in R. Each speech was split up into its sentences and the new data structure included the sentence along with the president who said it. For modelling purposes the sentences need to be only made up of their words so that when each sentence is tokenized into words, punctuation marks and numbers are not recognized as individual words. In order to do this the str_replace_all() function in the stringr package was used in order to remove any unwanted characters which were specified using a regular expression (regex). Number, commas, question marks and exclamation marks are some examples of the characters that were removed from analysis.
 
-Some exploration is reuired to check how imbalanced these classes are in terms of how many sentences are linked with each president. Table 1 below indicates the number of sentences associated with each president. It is clear that de Klerk and Motlanthe have much fewer associated sentences, this is expected as each of them only delivered one speech. Because of this large discrepancy in number of sentences, de Klerk and Motlanthe are removed from the analysis. The remaining four classes are still imbalanced with Mandela having the fewest sentences with 1665. To account for this all classes are made to have 1665 sentences and this is done by sampling without replacement 1665 sentences from the remaining three presidents: Mbeki, Zuma and Ramaphosa.
+Some exploration is required to check how imbalanced the classes are in terms of how many sentences are linked with each president. Table 1 below indicates the number of sentences associated with each president. It is clear that de Klerk and Motlanthe have much fewer associated sentences, this is expected as each of them only delivered one speech. Because of this large discrepancy in number of sentences, de Klerk and Motlanthe are removed from the analysis. The remaining four classes are still imbalanced with Mandela having the fewest sentences with 1665. To account for this all classes are made to have 1665 sentences and this is done by sampling without replacement 1665 sentences from the remaining three presidents: Mbeki, Zuma and Ramaphosa.
 
-*Table 1: Number of sentences by each president.*
+[*Table 1: Number of sentences by each president.*]{.underline}
 
 | de Klerk | Mandela | Mbeki | Motlanthe | Ramaphosa | Zuma |
 |----------|---------|-------|-----------|-----------|------|
@@ -160,15 +164,9 @@ table(sona_sentences_4_balanced$president_name)
 
 Again the unnest_tokens() function is used to break the sentences up into words where each word is now associated with a president and sentence number in order to keep track of which words belong in which sentences and who said them.
 
-Stop words are then removed.
+Because many of the presidents all use common words throughout their speeches, these words need to be removed from the analysis because they do not help one to differentiate one president from another. These words are referred to as stop words and include words such as: the, and, if, them, etc. A stop_words dictionary exists which was used to remove these words from the analysis.
 
-Then bag of words format created
-
-Then tfidf format created
-
-What about top 200 words.
-
-```{r, echo =FALSE}
+```{r, echo =FALSE, messages=FALSE, warning=FALSE}
 
 ## Tokenize into words
 sona_words = sona_sentences_FINAL %>% 
@@ -207,11 +205,94 @@ bag_of_words = sentence_word_links %>%
 # bag_of_words = bag_of_words[,!zero_columns]
 ```
 
-We now have our bag of words each associated with a sentence ID and president name. This bag of words is word counts we also need to set up tfidf.
-
-TFIDF
+We can consider the top words each presidents says as this will likely be used as one of the input data structures. Figure 1 displays the top 10 words said by each president. From this it is clear that there is significant overlap between presidents with words such as government, south and people being said by all presidents. There are however some words that are said many times by each president that do not appear in other presidents top 10 words. For example Zuma says compatriots many times and Ramaphosa refers frequently to the economy while others do not do so as frequently. These differences in the frequent words may be useful when deciding on the different data input structures to use in the predictive models.
 
 ```{r, echo = FALSE}
+
+## Testing out using top 200 words said by each president.
+
+each_president_common_words = sona_words %>%
+                             group_by(president_name) %>%
+                              count(word) %>%
+                              ungroup()
+
+## remove numbers here
+
+common_words_remove_stop = anti_join(each_president_common_words, stop_words, by='word')
+
+common_words_remove_stop_final = common_words_remove_stop %>%
+                                  group_by(president_name) %>%
+                                  filter(rank(desc(n)) <= 200) 
+
+top_10_words = common_words_remove_stop_final %>%
+                group_by(president_name) %>%
+                filter(rank(desc(n)) <= 10) 
+
+P1 = top_10_words %>%
+  filter(president_name == "Mandela") %>%
+  arrange(desc(n)) %>%
+  mutate(id = 1:dim(.)[1]) %>%
+  filter(id <= 15) %>%
+  ggplot(aes(reorder(word, n), n)) + geom_col(fill = "blue", col = "black") + 
+  coord_flip() + 
+  xlab(" ") + ylab("Times word said") +
+  theme_bw(base_size = 12) +
+  gghighlight(id <= 5) + ggtitle("Mandela")
+
+P2 = top_10_words %>%
+  filter(president_name == "Mbeki") %>%
+  arrange(desc(n)) %>%
+  mutate(id = 1:dim(.)[1]) %>%
+  filter(id <= 15) %>%
+  ggplot(aes(reorder(word, n), n)) + geom_col(fill = "blue", col = "black") + 
+  coord_flip() + 
+  xlab(" ") + ylab("Times word said") +
+  theme_bw(base_size = 12) +
+  gghighlight(id <= 5) + ggtitle("Mbeki")
+
+P3 = top_10_words %>%
+  filter(president_name == "Zuma") %>%
+  arrange(desc(n)) %>%
+  mutate(id = 1:dim(.)[1]) %>%
+  filter(id <= 15) %>%
+  ggplot(aes(reorder(word, n), n)) + geom_col(fill = "blue", col = "black") + 
+  coord_flip() + 
+  xlab(" ") + ylab("Times word said") +
+  theme_bw(base_size = 12) +
+  gghighlight(id <= 5) + ggtitle("Zuma")
+
+P4 = top_10_words %>%
+  filter(president_name == "Ramaphosa") %>%
+  arrange(desc(n)) %>%
+  mutate(id = 1:dim(.)[1]) %>%
+  filter(id <= 15) %>%
+  ggplot(aes(reorder(word, n), n)) + geom_col(fill = "blue", col = "black") + 
+  coord_flip() + 
+  xlab(" ") + ylab("Times word said") +
+  theme_bw(base_size = 12) +
+  gghighlight(id <= 5) +ggtitle("Ramaphosa")
+
+
+ggarrange(P1, P2, P3, P4, ncol = 2, nrow = 2)
+```
+
+## [Data Input Structures]{.underline}
+
+The text data needs to be put into a specific format for the predictive models for which we use a bag of words with counts and TFIDF values. In a bag of words model a document (in this case working with sentences) is represented by the set of words used in it (REFERENCE). In this case each row of the bag of words data frame represents a sentence where the columns are the possible words used. The number of columns is very large because all words used by all presidents, excluding the stop words or other words 'cleaned away', are represented on the columns. The matrix is relatively sparse in that for each row (sentence) only a couple columns have values due to only a few words being used in each sentence. The values are counts of how many times each word was used in each sentence. This format is the first type of input data structure use in the predictive models.
+
+The second input structure used in the predictive models is similar in format to the above except that instead of the values being counts of each word in each sentence, the value is a TFIDF value. A TFIDF (Term-frequency-inverse-document-frequency) value is a way of distinguishing which words are more or less 'important' in the delivered speeches. This value is made up of two calculations:
+
+-   The term frequency (tf) which is the number of times a specific terms appears in a document, divided by the number of terms in that document.
+
+-   The inverse document frequency (idf) which is a measure of how many documents contain the specific terms and is calculated as the log of the total number of documents divided by the number of documents containing the specific word.
+
+The TFIDF value for a word is the product of the tf and idf measures. This data structure thus contains all the words as columns, the sentences as the rows (made up of different words) and the values in each cell are the TFIDF values. This data input structure may be more beneficial than the bag of words counts because it gives more information in terms of the relative importance or significance of the different words used in different sentences.
+
+An additional way of varying the input structure which also helps reduce the dimensions of input data is to use only the top 200 most frequent words used by each president. This will help see if using more frequently used words helps better identify which president is speaking. As seen in the initial data exploration of each presidents top 10 words, there may however be significant overlap in each presidents most frequently used words and so this may not be an effective way of improving the predictions. However there maybe be unique words that each president says often that help differentiate them from one another. The top 200 words format is similar to the bag of words format in that the columns are words that make up each presidents most repeated words and the rows represent the sentences. Both counts and TFIDF scores will be used in the 200 top words data input format.
+
+The above differing formats result in four different types of format of input data, two are what will be referred to as 'all words' formats which contain all the words except for those removed in cleaning. The one 'all words' format uses counts of word so form a bag of words model and the other 'all words' format uses TFIDF scores. The two '200 words' input formats refer to those inputs that use only the top 200 most repeated words from each president. Again, one of these uses word counts and the other uses TFIDF values.
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 ndocs <- length(unique(sentence_word_links$sentence_ID))
 
 idf <- sentence_word_links%>% 
@@ -229,19 +310,12 @@ sentence_tdf <- sentence_tdf %>%
   bind_tf_idf(word, sentence_ID, n)   #replace with values from tidytext
 
 
-# TREE with TFIDF 
-## CHECK if deklerk and mothahle words are here 
-
 tfidf <- sentence_tdf %>% 
   select(sentence_ID, word, tf_idf) %>%  # note the change, using tf-idf
   pivot_wider(names_from = word, values_from = tf_idf, values_fill = 0) %>%  
   left_join(sona_sentences_FINAL %>% select(sentence_ID,president_name)) %>%
   select(sentence_ID, president_name, everything())
 ```
-
-Now have bag of words with counts and with TFIDF
-
-Need to add one where we only consider top 500 words said by each president.
 
 ```{r, echo=FALSE}
 ## Testing out using top 200 words said by each president.
@@ -302,11 +376,13 @@ tfidf_common <- sentence_tdf_common %>%
 
 ```
 
-## Training, Validation and Test splits
+## Training, Validation and Test Splits
 
-Now need to create training, validation and test splits with the data - by president so that classes are balanced.
+Having constructed the required data formats for the predictive model, the data must be split into training, validation and test sets before the predictive models are built. The split that will be used here is 60% training, 30% validation and 10% test data. The data splits are done grouping by president so that the classes of each president are balance in training , validation and test sets.
 
-Training = 60% Validation = 30% Test = 10%
+The seed was set to 2023 to ensure reproducibility. The training, validation and test sets were created by sampling from the sentence_ID variable and using this along with the anti_join() function to create the associated training, validation and test set vector of indices. For the different data formats, eg bag of words with counts versus TFIDF, the training data was created by selecting those rows where the sentence_ID variable matches those IDs in the training set vector of indices.
+
+The training set will be used to build the different predictive models. The validation set will be used to select which hyper-parameters or model configuration to use. The test set will provide a final measure of performance of the selected model.
 
 ```{r, echo = FALSE}
 set.seed(2023)
@@ -327,9 +403,668 @@ test_ids = remaining_ids %>% anti_join(val_ids)
 
 ```
 
-Now that we have got the ids for the train, validation and test set we can start fitting some models. Starting with a simple classfication tree and using count bag of words.
+```{r, echo = FALSE}
+
+## Create Training, Validation and Test Splits for the 4 data structures 
+
+## BAG OF WORDS WITH COUNTS - ALL WORDS 
+training_data_boW_all = bag_of_words %>%
+                      right_join(train_ids, by='sentence_ID') %>%
+                      select(-sentence_ID)
+X_train_all_BAG = training_data_boW_all[,2:ncol(training_data_boW_all)]
+Y_train_all_BAG = as.factor(training_data_boW_all$president_name)
+
+
+val_data_boW_all = bag_of_words %>%
+                  right_join(val_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_val_all_BAG = val_data_boW_all[,2:ncol(val_data_boW_all)]
+Y_val_all_BAG = as.factor(val_data_boW_all$president_name)
+
+test_data_boW_all = bag_of_words %>%
+                  right_join(test_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_test_all_BAG = test_data_boW_all[,2:ncol(test_data_boW_all)]
+Y_test_all_BAG = as.factor(test_data_boW_all$president_name)
+
+
+## TFIDF - ALL WORDS 
+
+training_data_tfidf_all = tfidf %>%
+                      right_join(train_ids, by='sentence_ID') %>%
+                      select(-sentence_ID)
+X_train_all_tfidf = training_data_tfidf_all[,2:ncol(training_data_tfidf_all)]
+Y_train_all_tfidf = as.factor(training_data_tfidf_all$president_name)
+
+
+val_data_tfidf_all = tfidf %>%
+                  right_join(val_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_val_all_tfidf = val_data_tfidf_all[,2:ncol(val_data_tfidf_all)]
+Y_val_all_tfidf = as.factor(val_data_tfidf_all$president_name)
+
+test_data_tfidf_all = tfidf %>%
+                  right_join(test_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_test_all_tfidf = test_data_tfidf_all[,2:ncol(test_data_tfidf_all)]
+Y_test_all_tfidf = as.factor(test_data_tfidf_all$president_name)
+
+
+##  BAG OF WORDS WITH COUNTS - 200 Words
+
+training_data_boW_200 = bag_of_words_200 %>%
+                      right_join(train_ids, by='sentence_ID') %>%
+                      select(-sentence_ID)
+X_train_200_BAG = training_data_boW_200[,2:ncol(training_data_boW_200)]
+Y_train_200_BAG = as.factor(training_data_boW_200$president_name)
+
+
+val_data_boW_200 = bag_of_words_200 %>%
+                  right_join(val_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_val_200_BAG = val_data_boW_200[,2:ncol(val_data_boW_200)]
+Y_val_200_BAG = as.factor(val_data_boW_200$president_name)
+
+test_data_boW_200 = bag_of_words_200 %>%
+                  right_join(test_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_test_200_BAG = test_data_boW_200[,2:ncol(test_data_boW_200)]
+Y_test_200_BAG = as.factor(test_data_boW_200$president_name)
+
+
+## TFIDF - 200 WORDS
+
+training_data_tfidf_200 = tfidf_common %>%
+                      right_join(train_ids, by='sentence_ID') %>%
+                      select(-sentence_ID)
+X_train_200_tfidf = training_data_tfidf_200[,2:ncol(training_data_tfidf_200)]
+Y_train_200_tfidf = as.factor(training_data_tfidf_200$president_name)
+
+
+val_data_tfidf_200 = tfidf_common %>%
+                  right_join(val_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_val_200_tfidf = val_data_tfidf_200[,2:ncol(val_data_tfidf_200)]
+Y_val_200_tfidf = as.factor(val_data_tfidf_200$president_name)
+
+test_data_tfidf_200 = tfidf_common %>%
+                  right_join(test_ids, by='sentence_ID') %>%
+                  select(-sentence_ID)
+X_test_200_tfidf = test_data_tfidf_200[,2:ncol(test_data_tfidf_200)]
+Y_test_200_tfidf = as.factor(test_data_tfidf_200$president_name)
+
+
+```
+
+## [Methods]{.underline}
+
+Having outlined the various data input structures that will be considered in the models as well as how the data has been split into its training, validation and testing classes, the predictive models that are used are now outlined and methods to implement them explained.
+
+### Classification Tree
+
+The first predictive model applied to the data is a simple classification tree. A classification tree is a decision tree that parititions the data on different variables in order to categorize each observation into a class. In this case a classification tree would take a sentence and based on the word counts or TFIDF counts, classify the sentence as being from one of the four presidents.
+
+A classification tree was fit using the rpart() function in R. Four models were fit, one on each of the four training data sets which are the full bag-of-words counts data, the full TFIDF data, the top 200 bag of words count data and the top 200 TFIDF data. The 'method' argument was set to 'class' because the response is categorical. The remaining arguments of the rpart() function were left at the default settings. For the classification tree model, no tuning was performed.
+
+### Boosting - Tree Based Method
+
+The second predictive model that was fit was boosted trees. This is an ensemble learning method and follows on from a simple classification tree. The boosting algorithm iteratively builds decision trees where each subsequent tree learns from previous trees mistakes and so the model gradually improves.
+
+To fit the boosted tree the gbm() function from the gbm package was used in R. The formula was the same as in the case of the classfication tree, predicting the president based on the bag of words and TFIDF data. For the input data structures that used only the top 200 words of each president, the number of trees was set to 500. However the input data structure with all words was much larger and took much longer to fit and so only 10 trees were used for this large data set. The interaction.depth was set to 2, shrinkage to 0.01 and bag.fraction to 1 for all models. The remaining parameters were left at the default settings.
+
+### Feed-Forward Neural Network
+
+A standard feed-forward neural network was fit to the different data types to predict the president who delivered the sentence. Here a number of different configurations of neural networks, with different numbers of layers and nodes were constructed and the validation set used to select the best model.
+
+There are many architectures, or configurations, that can be done by varying the number of layers in the network, number of nodes per layers and other parameters such as learning rate and activation functions. The selection or 'tuning' of these parameters is done manually by fitting 3 different neural networks using the training data and selecting the optimal architecture based on the validation set performance. The differing configurations will be fit on the four different input data structures.
+
+The keras package was used to train and fit the neural networks, making use of the keras_model_sequential(), compile() and fit() functions as well as various functions used to specify hidden layers, output layers and dropout.
+
+There were a number of parameters that were common across all 3 network architectures. The output layer for all networks had 4 nodes, corresponding to the one-hot encoding of the 4 presidents. The activation function on the output layer was set to "softmax" due to the categorical nature of the response variable. The "adam" optimizer was used and categorical crossentropy specified as the error measure. In terms of fitting the model with the fit() function in keras, 30 epochs over the data were done and the batch size was set to 200 observations.
+
+The differences in the configurations considered were the following:
+
+**Neural Network 1:** The first neural network was the 'simplest' model out of the three. This model had 1 hidden layer containing 50 nodes. The "Relu" activation function was specified on the hidden layer.
+
+**Neural Network 2:** The second network contained 3 hidden layers with 50, 10 and 5 nodes per layer respectively. "tanh" activation functions were used on each of these hidden layers.
+
+**Neural Network 3:** The third network contained 2 hidden layers with a dropout layer between the 2 hidden layers. The first layer contained 500 nodes while the second hidden layer contained 20 nodes. The dropout layer was between these two layers and a rate of 0.25 was specified.
+
+These models were fit to the data input structures with all words, which had an input argument in the first layer specified at 9085 because there were 9085 columns in the bag of words data input structure. When fitting these models to the bag of words for only the top 200 words per president this input argument for the first layer was set to 378, the number of columns in that data input structure.
+
+### Convolutional Neural Network
+
+The final predictive model considered for this problem is a convolutional neural network. A convolutional neural network is a more advanced model than a standard neural network and makes use of convolution and pooling isteps n order to fit the model. This type of model is usually suited to problems such as image classification as the convolutional layers make use of filters which can 'summarize' the data in that way extract key features.
+
+The convolutional neural network required a slightly different input format to the four data structure formats used above. For the CNNs, word embeddings are used to represent the speech sentences more directly, instead of using the bag of words format as before. Word embeddings are a way of representing words as numbers which are then fed into the model. This is done using the text_tokenizer() and texts_to_sequences() functions in R which populate the new data in terms of the embeddings. The maximum length is set to 15 which makes all sentence of length 15 and pads those sentences that are too short using the pad_sequences() function. Once sentences have been transformed in this way they can be used in the CNN model. Hence for this predictive model only one format of input data is being tested. The training, validation and test data sets still represent the same sentences as before but embedding makes them look different.
+
+Two different architectures of convolutional neural network were fitted to the data in order to make predictions. The first layer of both networks is an embedding layer which is required as a result of the word embedding for the data. The last layer, as in the case of the feed forward neural network, is a layer with 4 nodes and a "softmax" activation function. The remaining network specifications are as follows:
+
+**CNN 1:** Following the first layer a dropout layer is specified with a rate of 0.2. A convolutional layer is then specified with 64 filters with kernel_size set to 8 and "relu" activation used. A pooling layer with a pool_size of 2 is then specified. After flattening, a 'normal' hidden layer with 300 nodes and "relu" activation is specified.
+
+**CCN 2:** Following the first layer a dropout layer with a rate of 0.1 is specified. A convolutional layer with 36 filters and a kernel_size set to 6 is then specified, with a "tanh" activation function. The pooling layer is the same as CCN 1 with a pool_size of 2. The final hidden layer, after flattening, has 100 hidden nodes and a "tanh" activation function.
+
+## [Results]{.underline}
+
+Having outlined the methods and models implemented, the results of these models are now given. For each of the models, where apllicable, the classification accuracy of the models are given in terms of the validation data set. If different configurations of the models have been presented the model with the best validation accuracy is selected and the test set then applied to this model to obtain a final measure of classification accuracy.
+
+### Classification Tree
+
+The results of the classification tree fit to the four different data input structures is given in Table 2 below. This table specifies the classification accuracy for both training and test sets. The validation set was not used here because no tuning was performed so no 'best' model was required to be selected. From the results it is clear that the classification tree does very poorly at classifying which president said each sentence with the model only being a slight improvement from one just randomly choosing a president (25%). The classification tree performs badly on all four data input structures and for this model the different input structures to do not improve the accuracy significantly.
+
+```{r}
+
+## Classification Tree Results:
+
+## CT 1 - All Words - BoW Counts
+
+training_all_BAG = cbind(Y_train_all_BAG, X_train_all_BAG)
+fit_all_BAG <- rpart(Y_train_all_BAG ~ ., training_all_BAG, method = 'class')
+
+#plot(fit_all_BAG, main = 'Full Classification Tree')
+#text(fit_all_BAG, use.n = TRUE, all = TRUE, cex=.8)
+
+fittedtrain <- predict(fit_all_BAG, type = 'class')
+predtrain <- table(training_all_BAG$Y_train_all_BAG, fittedtrain)
+predtrain
+accuracy_all_BAG_train = round(sum(diag(predtrain))/sum(predtrain), 3) # training accuracy
+
+fittedtest <- predict(fit_all_BAG, newdata = cbind(Y_test_all_BAG, X_test_all_BAG), type = 'class')
+predtest <- table(Y_test_all_BAG, fittedtest)
+predtest
+accuracy_all_BAG_test = round(sum(diag(predtest))/sum(predtest), 3) # test accuracy 
+
+
+## CT 2 - All Words - TFIDF
+
+training_all_TFIDF = cbind(Y_train_all_tfidf, X_train_all_tfidf)
+fit_all_TFIDF <- rpart(Y_train_all_tfidf ~ ., training_all_TFIDF, method = 'class')
+
+#plot(fit_all_BAG, main = 'Full Classification Tree')
+#text(fit_all_BAG, use.n = TRUE, all = TRUE, cex=.8)
+
+fittedtrain <- predict(fit_all_TFIDF, type = 'class')
+predtrain <- table(training_all_TFIDF$Y_train_all_tfidf, fittedtrain)
+predtrain
+accuracy_all_TFIDF_train = round(sum(diag(predtrain))/sum(predtrain), 3) # training accuracy
+
+fittedtest <- predict(fit_all_TFIDF, newdata = cbind(Y_test_all_tfidf, X_test_all_tfidf), type = 'class')
+predtest <- table(Y_test_all_tfidf, fittedtest)
+predtest
+accuracy_all_TFIDF_test = round(sum(diag(predtest))/sum(predtest), 3) # test accuracy 
+
+## CT 3 - 200 Words - BoW Counts
+
+training_200_BAG = cbind(Y_train_200_BAG, X_train_200_BAG)
+fit_200_BAG <- rpart(training_200_BAG$Y_train_200_BAG ~ ., data =  training_200_BAG, method = 'class')
+
+plot(fit_200_BAG, main = 'Full Classification Tree')
+text(fit_200_BAG, use.n = TRUE, all = TRUE, cex=.8)
+
+fittedtrain <- predict(fit_200_BAG, newdata = cbind(Y_train_200_BAG, X_train_200_BAG), type = 'class')
+predtrain <- table(training_200_BAG$Y_train_200_BAG, fittedtrain)
+predtrain
+accuracy_200_BAG_train = round(sum(diag(predtrain))/sum(predtrain), 3) # training accuracy
+
+fittedtest <- predict(fit_200_BAG, newdata = cbind(Y_test_200_BAG, X_test_200_BAG), type = 'class')
+predtest <- table(Y_test_200_BAG, fittedtest)
+predtest
+accuracy_200_BAG_test = round(sum(diag(predtest))/sum(predtest), 3) # test accuracy 
+
+
+## CT 4 - 200 Words - TFIDF
+
+training_200_TFIDF = cbind(Y_train_200_tfidf, X_train_200_tfidf)
+fit_200_TFIDF <- rpart(Y_train_200_tfidf ~ ., training_200_TFIDF, method = 'class')
+
+plot(fit_200_TFIDF, main = 'Full Classification Tree')
+text(fit_200_TFIDF, use.n = TRUE, all = TRUE, cex=.8)
+
+fittedtrain <- predict(fit_200_TFIDF, newdata = cbind(Y_train_200_tfidf, X_train_200_tfidf), type = 'class')
+predtrain <- table(training_200_TFIDF$Y_train_200_tfidf, fittedtrain)
+predtrain
+accuracy_200_TFIDF_train = round(sum(diag(predtrain))/sum(predtrain), 3) # training accuracy
+
+fittedtest <- predict(fit_200_TFIDF, newdata = cbind(Y_test_all_tfidf, X_test_all_tfidf), type = 'class')
+predtest <- table(Y_test_200_tfidf, fittedtest)
+predtest
+accuracy_200_TFIDF_test = round(sum(diag(predtest))/sum(predtest), 3) # test accuracy 
+```
+
+[*Table 2: Classification Accuracy of Simple Classification Tree*]{.underline}
+
+| Data Input Structure             | All BOW Counts             | All TFIDF                    | 200 Words Counts           | 200 Words TFIDF              |
+|---------------|---------------|---------------|---------------|---------------|
+| Training Classification Accuracy | `r accuracy_all_BAG_train` | `r accuracy_all_TFIDF_train` | `r accuracy_200_BAG_train` | `r accuracy_200_TFIDF_train` |
+| Test Classification Accuracy     | `r accuracy_all_BAG_test`  | `r accuracy_all_TFIDF_test`  | `r accuracy_200_BAG_test`  | `r accuracy_200_TFIDF_test`  |
+
+### Boosted Trees
+
+The boosted tree model was also applied to all four data input structures as above, however the model for the larger data input structures was varied slight for computational reasons. Table 3 below gives the validation data set classification accuracy for the four different boosted tree models.
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+library(gbm)
+library(caret)
+
+## Gradient Boosting using gbm
+## 200 _ BAG
+
+data1 = as.data.frame(cbind(Y_train_200_BAG, X_train_200_BAG))
+data1 = na.omit(data1)
+gbm_200_BAG <- gbm(as.factor(data1$Y_train_200_BAG) ~ ., data = data1, 
+                     n.trees = 500, 
+                     interaction.depth = 2, 
+                     shrinkage = 0.01, 
+                     bag.fraction = 1, 
+                     verbose = F)
+gbm_pred <- predict(gbm_200_BAG, as.data.frame(X_val_200_BAG))
+pred = apply(gbm_pred, 1, which.max)
+
+p = table(pred,  as.numeric(Y_val_200_BAG))
+accuracy_200_BAG = round(sum(diag(p))/sum(p), 3)
+
+## 200 _ TFIDF
+
+data2 = as.data.frame(cbind(Y_train_200_tfidf, X_train_200_tfidf))
+data2 = na.omit(data2)
+gbm_200_tfidf <- gbm(as.factor(data2$Y_train_200_tfidf) ~ ., data = data2, 
+                     n.trees = 500, 
+                     interaction.depth = 2, 
+                     shrinkage = 0.01, 
+                     bag.fraction = 1,
+                     verbose = F)
+gbm_pred <- predict(gbm_200_tfidf, as.data.frame(X_val_200_tfidf))
+pred = apply(gbm_pred, 1, which.max)
+
+p = table(pred,  as.numeric(Y_val_200_tfidf))
+accuracy_200_tfidf = round(sum(diag(p))/sum(p), 3)
+
+## All - BAG
+
+data3 = as.data.frame(cbind(Y_train_all_BAG, X_train_all_BAG))
+data3 = na.omit(data3)
+gbm_all_BAG <- gbm(as.factor(data3$Y_train_all_BAG) ~ ., data = data3, 
+                     n.trees = 10, 
+                     interaction.depth = 2, 
+                     shrinkage = 0.01, 
+                     bag.fraction = 1, 
+                     verbose = F)
+gbm_pred <- predict(gbm_all_BAG, as.data.frame(X_val_all_BAG))
+pred = apply(gbm_pred, 1, which.max)
+
+p = table(pred,  as.numeric(Y_val_200_BAG))
+accuracy_all_BAG = round(sum(diag(p))/sum(p), 3)
+
+## ALL - TFIDF
+
+data4 = as.data.frame(cbind(Y_train_all_tfidf, X_train_all_tfidf))
+data4 = na.omit(data4)
+gbm_all_tfidf <- gbm(as.factor(data4$Y_train_all_tfidf) ~ ., data = data4, 
+                     n.trees = 10, 
+                     interaction.depth = 2, 
+                     shrinkage = 0.01, 
+                     bag.fraction = 1, 
+                     verbose = F)
+gbm_pred <- predict(gbm_all_tfidf, as.data.frame(X_val_all_tfidf))
+pred = apply(gbm_pred, 1, which.max)
+
+p = table(pred,  as.numeric(Y_val_all_tfidf))
+accuracy_all_tfidf = round(sum(diag(p))/sum(p), 3)
+
+
+
+
+
+
+```
+
+[*Table 3: Classification Accuracy of Boosted Trees*]{.underline}
+
+| Data Input Structure               | All BOW Counts       | All TFIDF              | 200 Words Counts     | 200 Words TFIDF        |
+|---------------|---------------|---------------|---------------|---------------|
+| Validation Classification Accuracy | `r accuracy_all_BAG` | `r accuracy_all_tfidf` | `r accuracy_200_BAG` | `r accuracy_200_tfidf` |
+
+From the above table it is clear that the models that made use of the most common words (top 200 from each president) performed significantly better than those that use all words. This however was expected because the number of trees used in these models was much much larger which gave the model more tree to learn from. While the model using all words did not perform particularly well, with a classification accuracy of around on 30%, this is an improvement from the simple classification tree and is slightly better than the naive approach of guessing a president (25%).
 
 ```{r, echo = FALSE}
+gbm_pred <- predict(gbm_200_tfidf, as.data.frame(X_test_200_tfidf))
+pred = apply(gbm_pred, 1, which.max)
+
+p = table(pred,  as.numeric(Y_test_200_tfidf))
+accuracy_final = round(sum(diag(p))/sum(p), 3)
+```
+
+The best performing boosted tree model of the four is the top 200 words per president in the TFIDF format, with a classification accuracy of `r accuracy_200_tfidf`. Applying the test set to this model, one obtains a classification accuracy of `r accuracy_final`. This is the final classification accuracy from the best model of the boosted trees predictive model. While this is not a good classification accuracy, it is better than the naive model by around 20%.
+
+### Feed-Forward Neural Network
+
+The third predictive model used for this problem was the standard feed-forward neural network. As discussed in the methods section, three different architectures of networks were tested here on the four different data input structures. Table 4 below gives the validation data set classification accuracy for the different network architectures for the different data input structures.
+
+```{r, echo = FALSE}
+
+
+Y_train_all_tfidf = as.factor(Y_train_all_tfidf)
+Y_val_all_tfidf = as.factor(Y_val_all_tfidf)
+Y_test_all_tfidf = as.factor(Y_test_all_tfidf)
+
+# Make sure X is in matrix format 
+X_train_200_BAG = as.matrix(X_train_200_BAG)
+X_train_200_tfidf = as.matrix(X_train_200_tfidf)
+X_train_all_BAG = as.matrix(X_train_all_BAG)
+X_train_all_tfidf = as.matrix(X_train_all_tfidf)
+
+X_val_200_BAG = as.matrix(X_val_200_BAG)
+X_val_200_tfidf = as.matrix(X_val_200_tfidf)
+X_val_all_BAG = as.matrix(X_val_all_BAG)
+X_val_all_tfidf = as.matrix(X_val_all_tfidf)
+
+X_test_200_BAG = as.matrix(X_test_200_BAG)
+X_test_200_tfidf = as.matrix(X_test_200_tfidf)
+X_test_all_BAG = as.matrix(X_test_all_BAG)
+X_test_all_tfidf = as.matrix(X_test_all_tfidf)
+
+#Keras takes in one-hot encoding
+
+Y_train =  to_categorical(as.integer(unlist(Y_train_all_tfidf)) - 1)
+
+
+Y_val = to_categorical(as.integer(unlist(Y_val_all_tfidf)) - 1)
+
+
+Y_test =  to_categorical(as.integer(unlist(Y_test_all_tfidf)) - 1)
+
+
+## ========= ALL WORDS MODELS =====================================================
+## MODEL 1 - SIMPLE MODEL:
+#- 1 Hidden Layer 
+#- 50 Nodes on Hidden Layer 
+#- Relu activation on hidden layer
+
+model1 <- keras_model_sequential() %>%
+  layer_dense(units = 50, input_shape = c(9085), activation = "relu") %>%
+  layer_dense(units = 4, activation = "softmax")
+summary(model1)
+model1 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+history1.1 <- model1 %>% fit(X_train_all_tfidf, Y_train, epochs = 30, batch_size = 200, verbose = 0) 
+#plot(history1.1)
+results1.1 <- model1 %>% evaluate(X_val_all_tfidf, Y_val, batch_size=200, verbose = 2)
+
+history1.2 <- model1 %>% fit(X_train_all_BAG, Y_train, epochs = 30, batch_size = 200, verbose = 0) 
+#plot(history1.2)
+results1.2 <- model1 %>% evaluate(X_val_all_BAG, Y_val, batch_size=200, verbose = 2)
+
+
+## MODEL 2 - Slightly more complicated MODEL:
+#- 3 Hidden Layer 
+#- 50-10-5 Nodes on Hidden Layer 
+#- Relu activation on hidden layers
+
+model2 <- keras_model_sequential() %>%
+  layer_dense(units = 50, input_shape = c(9085), activation = "tanh") %>%
+  layer_dense(units = 10, input_shape = c(50), activation = "tanh") %>%
+  layer_dense(units = 5, input_shape = c(10), activation = "tanh") %>%
+  layer_dense(units = 4, activation = "softmax")
+summary(model2)
+model2 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+history2.1 <- model2 %>% fit(X_train_all_tfidf, Y_train, epochs = 30, batch_size = 200, verbose = 0) 
+#plot(history2.1)
+results2.1 <- model2 %>% evaluate(X_val_all_tfidf, Y_val, batch_size=200, verbose = 2)
+
+history2.2 <- model2 %>% fit(X_train_all_BAG, Y_train, epochs = 30, batch_size = 200, verbose = 0) 
+#plot(history2.1)
+results2.2 <- model2 %>% evaluate(X_val_all_BAG, Y_val, batch_size=200, verbose = 2)
+
+## MODEL 3 -  2 hidden layers with dropout layer in between :
+#- 3 Hidden Layer 
+#- 500-20 Nodes on Hidden Layer 
+#- Relu activation on hidden layers
+#- dropout layer with 0.25
+
+model3 <- keras_model_sequential() %>%
+  layer_dense(units = 500, input_shape = c(9085), activation = "relu") %>%
+  layer_dropout(rate=0.25) %>%
+  layer_dense(units = 20, input_shape = c(500), activation = "relu") %>%
+  layer_dense(units = 4, activation = "softmax")
+summary(model3)
+model3 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+history3.1 <- model3 %>% fit(X_train_all_tfidf, Y_train, epochs = 30, batch_size = 200, verbose = 0) 
+#plot(history3.1)
+results3.1 <- model3 %>% evaluate(X_val_all_tfidf, Y_val, batch_size=200, verbose = 2)
+history3.2 <- model3 %>% fit(X_train_all_BAG, Y_train, epochs = 30, batch_size = 200, verbose = 0) 
+#plot(history3.2)
+results3.2 <- model3 %>% evaluate(X_val_all_BAG, Y_val, batch_size=200, verbose = 2)
+## =====================================================================================
+
+
+## ======================= 200 Words Models =================================
+## MODEL 1 - SIMPLE MODEL:
+#- 1 Hidden Layer 
+#- 50 Nodes on Hidden Layer 
+#- Relu activation on hidden layer
+
+## Figure out which rows contain NA's
+
+rows_with_na = which(apply(X_train_200_BAG, 1, function(row) any(is.na(row))))
+rows_with_na = which(apply(X_train_200_tfidf, 1, function(row) any(is.na(row))))
+
+X_train_new_200_TFIDF = X_train_200_tfidf[-rows_with_na,]
+X_train_new_200_BAG = X_train_200_BAG[-rows_with_na,]
+Y_train_new = Y_train[-rows_with_na,]
+
+model1 <- keras_model_sequential() %>%
+  layer_dense(units = 50, input_shape = c(378), activation = "tanh") %>%
+  layer_dense(units = 4, activation = "softmax")
+summary(model1)
+model1 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+history1.1_200 <- model1 %>% fit(X_train_new_200_TFIDF, Y_train_new, epochs = 30, batch_size = 200, verbose = 0) 
+plot(history1.1_200)
+results1.1_200 <- model1 %>% evaluate(X_val_200_tfidf, Y_val, batch_size=200, verbose = 2)
+
+history1.2_200 <- model1 %>% fit(X_train_new_200_BAG, Y_train_new, epochs = 30, batch_size = 200, verbose = 0) 
+plot(history1.2_200)
+results1.2_200 <- model1 %>% evaluate(X_val_200_BAG, Y_val, batch_size=200, verbose = 2)
+
+
+## MODEL 2 - Slightly more complicated MODEL:
+#- 3 Hidden Layer 
+#- 50-10-5 Nodes on Hidden Layer 
+#- Relu activation on hidden layers
+
+model2 <- keras_model_sequential() %>%
+  layer_dense(units = 50, input_shape = c(378), activation = "tanh") %>%
+  layer_dense(units = 10, input_shape = c(50), activation = "tanh") %>%
+  layer_dense(units = 5, input_shape = c(10), activation = "tanh") %>%
+  layer_dense(units = 4, activation = "softmax")
+summary(model2)
+model2 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+history2.1_200 <- model2 %>% fit(X_train_new_200_TFIDF, Y_train_new, epochs = 30, batch_size = 200, verbose = 0) 
+#plot(history2.1_200)
+results2.1_200 <- model2 %>% evaluate(X_val_200_tfidf, Y_val, batch_size=200, verbose = 2)
+
+history2.2_200 <- model2 %>% fit(X_train_new_200_BAG, Y_train_new, epochs = 30, batch_size = 200, verbose = 0) 
+plot(history2.2_200)
+results2.2_200 <- model2 %>% evaluate(X_val_200_BAG, Y_val, batch_size=200, verbose = 2)
+
+## MODEL 3 -  2 hidden layers with dropout layer in between :
+#- 3 Hidden Layer 
+#- 500-20 Nodes on Hidden Layer 
+#- Relu activation on hidden layers
+#- dropout layer with 0.25
+
+model3 <- keras_model_sequential() %>%
+  layer_dense(units = 500, input_shape = c(378), activation = "relu") %>%
+  layer_dropout(rate=0.25) %>%
+  layer_dense(units = 20, input_shape = c(500), activation = "relu") %>%
+  layer_dense(units = 4, activation = "softmax")
+summary(model3)
+model3 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+history3.1_200 <- model3 %>% fit(X_train_new_200_TFIDF, Y_train_new, epochs = 30, batch_size = 200, verbose = 0) 
+plot(history3.1_200)
+results3.1_200 <- model3 %>% evaluate(X_val_200_tfidf, Y_val, batch_size=200, verbose = 2)
+history3.2_200 <- model3 %>% fit(X_train_new_200_BAG, Y_train_new, epochs = 30, batch_size = 200, verbose = 0) 
+#plot(history3.2_200)
+results3.2_200 <- model3 %>% evaluate(X_val_200_tfidf, Y_val, batch_size=200, verbose = 2)
+
+
+## ==========================================================================
+
+```
+
+[*Table 4: Validation Set Classification Accuracy of Neural Networks*]{.underline}
+
+| Data Input Structure                   | All BOW Counts               | All TFIDF                    | 200 Words Counts                 | 200 Words TFIDF                  |
+|---------------|---------------|---------------|---------------|---------------|
+| NN1 Validation Classification Accuracy | `r as.matrix(results1.2)[2]` | `r as.matrix(results1.1)[2]` | `r as.matrix(results1.2_200)[2]` | `r as.matrix(results1.1_200)[2]` |
+| NN2 Validation Classification Accuracy | `r as.matrix(results2.2)[2]` | `r as.matrix(results2.1)[2]` | `r as.matrix(results2.2_200)[2]` | `r as.matrix(results2.1_200)[2]` |
+| NN3 Validation Classification Accuracy | `r as.matrix(results3.2)[2]` | `r as.matrix(results3.1)[2]` | `r as.matrix(results3.2_200)[2]` | `r as.matrix(results3.1_200)[2]` |
+
+An improvement is seen for these neural network classification models from the boosted tree models with the models using all words having over 50% classification accuracy. In general the neural networks that use all words perform better at classifying the presidents than the models which use only the top 200 words used by each president. Comparing both input structure that use all words, it can be seen that the TFIDF input structure performs slightly better than the standard counts bag of words input data structure. In terms of the three different network architectures the best network architecture depends on the input data structure used. For the BOW counts data, the NN1 and NN3 have almost the same accuracy with NN2 slightly lower. For the TFIDF data, the simplest neural network performs the best with a classification accuracy of `r as.matrix(results1.1[2]`. The model NN1, with TFIDF data has the highest validation set accuracy and so is selected as the best model.
+
+```{r}
+model1 <- keras_model_sequential() %>%
+  layer_dense(units = 50, input_shape = c(9085), activation = "relu") %>%
+  layer_dense(units = 4, activation = "softmax")
+#summary(model1)
+model1 %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+history1.1 <- model1 %>% fit(X_train_all_tfidf, Y_train, epochs = 30, batch_size = 200, verbose = 0) 
+#plot(history1.1)
+results_test <- model1 %>% evaluate(X_test_all_tfidf, Y_test, batch_size=200, verbose = 0)
+
+```
+
+The test data set is applied to this model to obtain a final prediction accuracy. The classification accuracy on the test data, using TFIDF input and NN1 is `r as.matrix(results_test)[2]` . While this is not a very good classification accuracy it is much better than the naive classification approach (25%) and is fairly good in terms of the accuracy seen in other models so far.
+
+### Convolutional Neural Network
+
+The final predictive method that was considered for the predict-the-president problem was a convolutional neural network. As already discussed in the methods section, this predictive model took in a different format of the data by using word embeddings for each of the sentences instead of the bag of words model of input data. Two different architectures were used here as outlined in the methods. Table 5 below summarizes the results of the two methods.
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+max_features <- 1000        # choose max_features most popular words
+tokenizer = text_tokenizer(num_words = max_features)
+fit_text_tokenizer(tokenizer, sona_sentences_FINAL$sentences[23])
+
+
+sona_sentences_FINAL$sentences[23]
+tts <- texts_to_sequences(tokenizer, sona_sentences_FINAL$sentences[23])
+tts
+
+tokenizer$word_index[tts[[1]]]
+
+sequences = tokenizer$texts_to_sequences(sona_sentences_FINAL$sentences)
+
+train_row = train_ids$sentence_ID
+val_row = val_ids$sentence_ID
+test_row = test_ids$sentence_ID
+
+y = as.factor(sona_sentences_FINAL$president_name)
+y = as.integer(y)
+
+train <- list()
+val <- list()
+test = list()
+train$x <- sequences[train_ids$sentence_ID]
+val$x <-  sequences[val_ids$sentence_ID]
+test$x = sequences[test_ids$sentence_ID]
+
+train$y <- y[train_row]
+val$y <-  y[val_row]
+test$y = y[test_row]
+
+hist(unlist(lapply(sequences, length)), main = "Sequence length after tokenization", breaks=20)
+
+maxlen <- 15            
+x_train <- train$x %>% pad_sequences(maxlen = maxlen)
+x_val <- val$x %>% pad_sequences(maxlen = maxlen)
+x_test = test$x %>% pad_sequences(maxlen=maxlen)
+
+embedding_dims <- 10
+model <- keras_model_sequential() %>% 
+  layer_embedding(max_features, output_dim = embedding_dims, input_length = maxlen) %>%
+  layer_dropout(0.2) %>%
+  layer_conv_1d(filters = 64, kernel_size = 8, activation = "relu") %>%
+  layer_max_pooling_1d(pool_size = 2) %>%
+  layer_flatten() %>%
+  layer_dense(300, activation = "relu") %>%
+  layer_dense(4, activation = "softmax")
+
+summary(model)
+
+model %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+
+history <- model %>% fit(x_train,Y_train,
+    batch_size = 200, epochs = 30, verbose = 0)
+plot(history)
+results_CNN1 <- model %>% evaluate(x_val, Y_val, batch_size=200, verbose = 2)
+
+## Need to fix this
+embedding_dims <- 10
+model <- keras_model_sequential() %>% 
+  layer_embedding(max_features, output_dim = embedding_dims, input_length = maxlen) %>%
+  layer_dropout(0.1) %>%
+  layer_conv_1d(filters = 36, kernel_size = 6, activation = "tanh") %>%
+  layer_max_pooling_1d(pool_size = 2) %>%
+  layer_flatten() %>%
+  layer_dense(100, activation = "tanh") %>%
+  layer_dense(4, activation = "softmax")
+
+summary(model)
+
+model %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = "adam",
+  metrics = "accuracy"
+)
+
+history <- model %>% fit(x_train,Y_train,
+    batch_size = 200, epochs = 30, verbose = 0)
+plot(history)
+
+results_CNN2 <- model %>% evaluate(x_val, Y_val, batch_size=200, verbose = 2)
+result_test_CNN = model %>% evaluate(x_test, Y_test, batch_size=200, verbose = 2)
+
+```
+
+[*Table 5: Validation Set Classification Accuracy of CNN*]{.underline}
+
+|                                    | CNN 1                          | CNN 2                          |
+|------------------------|------------------------|------------------------|
+| Validation Classification Accuracy | `r as.matrix(results_CNN1)[2]` | `r as.matrix(results_CNN2)[2]` |
+
+It is clear that the convolutional neural network does not do well at predicting the correct classification with the validation accuracy being the same as a naive prediction guess would be. The test set accuracy for CNN2, which performs only marginally better, is: `r as.matrix(results_test_CNN)[2]` which is very poor predictive performance.
+
+```{r, echo = FALSE, eval = FALSE}
 training_data_boW = bag_of_words %>%
                       right_join(train_ids, by='sentence_ID') %>%
                       select(-sentence_ID)
@@ -367,11 +1102,10 @@ predtest <- table(Y_val, fittedtest)
 predtest
 round(sum(diag(predtest))/sum(predtest), 3) # test accuracy
 
+
 ```
 
-Clearly the classification tree is not doing very well on word counts bag of words model. What about tfidf
-
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 training_data_tfidf = tfidf %>%
                       right_join(train_ids, by='sentence_ID') %>%
                       select(-sentence_ID)
@@ -408,6 +1142,9 @@ fittedtest <- predict(fit, newdata = cbind(Y_val, X_val), type = 'class')
 predtest <- table(Y_val, fittedtest)
 predtest
 round(sum(diag(predtest))/sum(predtest), 3) # test accuracy
+
+
+
 
 ```
 
@@ -451,9 +1188,7 @@ round(sum(diag(predtest))/sum(predtest), 3) # test accuracy
 
 ```
 
-Clearly the classification tree is not doing well so now we try a neural network.
-
-```{r}
+```{r, eval = FALSE, include = FALSE}
 library(keras)
       # This may be ruining the run
       # noticed that after running this, your 
@@ -510,7 +1245,7 @@ results <- model %>% evaluate(X_val, Y_val, batch_size=128, verbose = 2)
 
 Now lets try a cnn
 
-```{r, echo = FALSE}
+```{r, eval=FALSE}
 
 max_features <- 1000        # choose max_features most popular words
 tokenizer = text_tokenizer(num_words = max_features)
@@ -566,7 +1301,7 @@ plot(history)
 
 ```
 
-```{r}
+```{r, eval=FALSE}
 embedding_dims <- 10
 model <- keras_model_sequential() %>% 
   layer_embedding(max_features, output_dim = embedding_dims, input_length = maxlen) %>%
@@ -592,21 +1327,8 @@ plot(history)
 results <- model %>% evaluate(x_test, Y_val, batch_size=600, verbose = 2)
 ```
 
-Lets try random forest with tfidf
+## Discussion
 
-```{r, eval = FALSE}
-library(ranger)
+### Which type of predictive model had most satisfactory results
 
-X_tfidf = tfidf[,3:ncol(tfidf)]
-X_tfidf_train = X_tfidf[train_ids$sentence_ID,]
-
-
-Y_train_forest = (tfidf[train_ids$sentence_ID,2])
-
-# Assuming your response variable is in 'y' and your bag of words matrix is in 'X'
-model <- ranger(tfidf[train_ids$sentence_ID,2], tfidf[train_ids$sentence_ID,-c(2)], num.trees = 100, importance = "permutation")
-
-
-```
-
-What about multinomial logistic regression?
+### Which input data structure seemed to be best

@@ -122,13 +122,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-submit-button-title": "Submit"
   }
 }</script>
-</head><body class="nav-fixed">\usepackages{amsmath}
 
 
 <link rel="stylesheet" href="styles.css">
+</head>
 
-
-
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -175,7 +174,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#literature-review" id="toc-literature-review" class="nav-link" data-scroll-target="#literature-review">Literature Review</a></li>
   <li><a href="#data-cleaning-tokenization-and-exploration" id="toc-data-cleaning-tokenization-and-exploration" class="nav-link" data-scroll-target="#data-cleaning-tokenization-and-exploration">Data Cleaning, Tokenization, and Exploration</a></li>
-  <li><a href="#training-validation-and-test-splits" id="toc-training-validation-and-test-splits" class="nav-link" data-scroll-target="#training-validation-and-test-splits">Training, Validation and Test splits</a></li>
+  <li><a href="#data-input-structures" id="toc-data-input-structures" class="nav-link" data-scroll-target="#data-input-structures">Data Input Structures</a></li>
+  <li><a href="#training-validation-and-test-splits" id="toc-training-validation-and-test-splits" class="nav-link" data-scroll-target="#training-validation-and-test-splits">Training, Validation and Test Splits</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#classification-tree" id="toc-classification-tree" class="nav-link" data-scroll-target="#classification-tree">Classification Tree</a></li>
+  <li><a href="#random-forest" id="toc-random-forest" class="nav-link" data-scroll-target="#random-forest">Random Forest</a></li>
+  <li><a href="#feed-forward-neural-network" id="toc-feed-forward-neural-network" class="nav-link" data-scroll-target="#feed-forward-neural-network">Feed-Forward Neural Network</a></li>
+  <li><a href="#convolutional-neural-network" id="toc-convolutional-neural-network" class="nav-link" data-scroll-target="#convolutional-neural-network">Convolutional Neural Network</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#classification-tree-1" id="toc-classification-tree-1" class="nav-link" data-scroll-target="#classification-tree-1">Classification Tree</a></li>
+  <li><a href="#random-forest-1" id="toc-random-forest-1" class="nav-link" data-scroll-target="#random-forest-1">Random Forest</a></li>
+  <li><a href="#feed-forward-neural-network-1" id="toc-feed-forward-neural-network-1" class="nav-link" data-scroll-target="#feed-forward-neural-network-1">Feed-Forward Neural Network</a></li>
+  <li><a href="#convolutional-neural-network-1" id="toc-convolutional-neural-network-1" class="nav-link" data-scroll-target="#convolutional-neural-network-1">Convolutional Neural Network</a></li>
+  <li><a href="#overall-test-set-results" id="toc-overall-test-set-results" class="nav-link" data-scroll-target="#overall-test-set-results">Overall Test set results</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a>
+  <ul class="collapse">
+  <li><a href="#which-type-of-predictive-model-had-most-satisfactory-results" id="toc-which-type-of-predictive-model-had-most-satisfactory-results" class="nav-link" data-scroll-target="#which-type-of-predictive-model-had-most-satisfactory-results">Which type of predictive model had most satisfactory results</a></li>
+  <li><a href="#which-input-data-structure-seemed-to-be-best" id="toc-which-input-data-structure-seemed-to-be-best" class="nav-link" data-scroll-target="#which-input-data-structure-seemed-to-be-best">Which input data structure seemed to be best</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -210,16 +231,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>The aim of this assignment is to ‘predict the president’. The data set given is a collection of 36 State of the Nation speeches in South Africa, delivered between 1994 and 2022. The aim of the assignment is to ‘predict the president’ by building a model that takes in as a input a particular sentences and returns a prediction of which president said the sentence. The assignment thus focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks. A brief literature review is first given. Following this the data cleaning and exploration will be detailed and key features of the data discussed. The methods used to construct the different predictive models as well as format the data will then outline. Results of the different predictive models will be presented and discussed and final conclusions made.</p>
+<p>The aim of this assignment is to ‘predict the president’, to build predictive models that take in a sentence of text from a speech and predict which South African president said it. The data set given is a collection of 36 State of the Nation Addresses (SONA) in South Africa, delivered between 1994 and 2022. The assignment focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks and their classification performance. Before unpacking the data, a brief literature review is first given. Following this the data cleaning and exploration will be detailed and key features of the data discussed. The methods to format the data as well as the training, validation and test data splits will be outlined. The methods used to construct the different predictive models will then be detailed. Following this, results of the different predictive models will be presented and discussed and final conclusions made.</p>
 </section>
 <section id="literature-review" class="level2">
 <h2 class="anchored" data-anchor-id="literature-review">Literature Review</h2>
+<p>A brief summary of the literature on text classification techniques is now presented.</p>
 </section>
 <section id="data-cleaning-tokenization-and-exploration" class="level2">
 <h2 class="anchored" data-anchor-id="data-cleaning-tokenization-and-exploration">Data Cleaning, Tokenization, and Exploration</h2>
-<p>The data that is used in this particular problem are the State of the Nation speeches in South Africa from 1994 to 2022. There a 36 speeches given by 6 different presidents, namely Mandela, de Klerk, Mbkei, Zuma, Motlanthe and Ramaphosa.. The initial steps in the solving the predict the president problem is to break the speeches up into their indivudal sentences and remove any unwanted characters, numbers or punctuation marks. The speeches were tokenized, broken up into smaller parts, using the unnest_tokens function in R. Each speech was split up into its sentences and the new data structure included the sentence along with the president who said it. For modelling purposes the sentences need to be only made up of their words so that when each sentence is tokenized into words, punctuation marks and numbers are not recognized as individual words. In order to do this the str_replace_all() function in the stringr package was used in order to remove any unwanted characters which were specified using a regual expression (regex). Number, commas, question marks and exclamation marks are some examples of the characters that were removed from analysis.</p>
-<p>Some exploration is reuired to check how imbalanced these classes are in terms of how many sentences are linked with each president. Table 1 below indicates the number of sentences associated with each president. It is clear that de Klerk and Motlanthe have much fewer associated sentences, this is expected as each of them only delivered one speech. Because of this large discrepancy in number of sentences, de Klerk and Motlanthe are removed from the analysis. The remaining four classes are still imbalanced with Mandela having the fewest sentences with 1665. To account for this all classes are made to have 1665 sentences and this is done by sampling without replacement 1665 sentences from the remaining three presidents: Mbeki, Zuma and Ramaphosa.</p>
-<p><em>Table 1: Number of sentences by each president.</em></p>
+<p>The data that is used in this particular problem are the State of the Nation Addresses in South Africa from 1994 to 2022. There a 36 speeches given by 6 different presidents, namely Mandela, de Klerk, Mbkei, Zuma, Motlanthe and Ramaphosa. The initial steps in the solving the predict the president problem is to break the speeches up into their individual sentences and remove any unwanted characters, numbers or punctuation marks. The speeches were tokenized, broken up into smaller parts, using the unnest_tokens function in R. Each speech was split up into its sentences and the new data structure included the sentence along with the president who said it. For modelling purposes the sentences need to be only made up of their words so that when each sentence is tokenized into words, punctuation marks and numbers are not recognized as individual words. In order to do this the str_replace_all() function in the stringr package was used in order to remove any unwanted characters which were specified using a regular expression (regex). Number, commas, question marks and exclamation marks are some examples of the characters that were removed from analysis.</p>
+<p>Some exploration is required to check how imbalanced the classes are in terms of how many sentences are linked with each president. Table 1 below indicates the number of sentences associated with each president. It is clear that de Klerk and Motlanthe have much fewer associated sentences, this is expected as each of them only delivered one speech. Because of this large discrepancy in number of sentences, de Klerk and Motlanthe are removed from the analysis. The remaining four classes are still imbalanced with Mandela having the fewest sentences with 1665. To account for this all classes are made to have 1665 sentences and this is done by sampling without replacement 1665 sentences from the remaining three presidents: Mbeki, Zuma and Ramaphosa.</p>
+<p><u><em>Table 1: Number of sentences by each president.</em></u></p>
 <table class="table">
 <thead>
 <tr class="header">
@@ -247,25 +269,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </div>
 <p>Again the unnest_tokens() function is used to break the sentences up into words where each word is now associated with a president and sentence number in order to keep track of which words belong in which sentences and who said them.</p>
-<p>Stop words are then removed.</p>
-<p>Then bag of words format created</p>
-<p>Then tfidf format created</p>
-<p>What about top 200 words.</p>
-<div class="cell">
+<p>Because many of the presidents all use common words throughout their speeches, these words need to be removed from the analysis because they do not help one to differentiate one president from another. These words are referred to as stop words and include words such as: the, and, if, them, etc. A stop_words dictionary exists which was used to remove these words from the analysis.</p>
+<div class="cell" data-messages="false">
 <div class="cell-output cell-output-stderr">
 <pre><code>Joining with `by = join_by(word)`
 Joining with `by = join_by(sentence_ID)`</code></pre>
 </div>
 </div>
-<p>We now have our bag of words each associated with a sentence ID and president name. This bag of words is word counts we also need to set up tfidf.</p>
-<p>TFIDF</p>
+<p>We can consider the top words each presidents says as this will likely be used as one of the input data structures. Figure 1 displays the top 10 words said by each president. From this it is clear that there is significant overlap between presidents with words such as government, south and people being said by all presidents. There are however some words that are said many times by each president that do not appear in other presidents top 10 words. For example Zuma says compatriots many times and Ramaphosa refers frequently to the economy while others do not do so as frequently. These differences in the frequent words may be useful when deciding on the different data input structures to use in the predictive models.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Joining with `by = join_by(sentence_ID)`</code></pre>
+<div class="cell-output-display">
+<p><img src="report_working_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Now have bag of words with counts and with TFIDF</p>
-<p>Need to add one where we only consider top 500 words said by each president.</p>
+</section>
+<section id="data-input-structures" class="level2">
+<h2 class="anchored" data-anchor-id="data-input-structures">Data Input Structures</h2>
+<p>The text data needs to be put into a specific format for the predictive models for which we use a bag of words with counts and TFIDF values. In a bag of words model a document (in this case working with sentences) is represented by the set of words used in it (REFERENCE). In this case each row of the bag of words data frame represents a sentence where the columns are the possible words used. The number of columns is very large because all words used by all presidents, excluding the stop words or other words ‘cleaned away’, are represented on the columns. The matrix is relatively sparse in that for each row (sentence) only a couple columns have values due to only a few words being used in each sentence. The values are counts of how many times each word was used in each sentence. This format is the first type of input data structure use in the predictive models.</p>
+<p>The second input structure used in the predictive models is similar in format to the above except that instead of the values being counts of each word in each sentence, the value is a TFIDF value. A TFIDF (Term-frequency-inverse-document-frequency) value is a way of distinguishing which words are more or less ‘important’ in the delivered speeches. This value is made up of two calculations:</p>
+<ul>
+<li><p>The term frequency (tf) which is the number of times a specific terms appears in a document, divided by the number of terms in that document.</p></li>
+<li><p>The inverse document frequency (idf) which is a measure of how many documents contain the specific terms and is calculated as the log of the total number of documents divided by the number of documents containing the specific word.</p></li>
+</ul>
+<p>The TFIDF value for a word is the product of the tf and idf measures. This data structure thus contains all the words as columns, the sentences as the rows (made up of different words) and the values in each cell are the TFIDF values. This data input structure may be more beneficial than the bag of words counts because it gives more information in terms of the relative importance or significance of the different words used in different sentences.</p>
+<p>An additional way of varying the input structure which also helps reduce the dimensions of input data is to use only the top 200 most frequent words used by each president. This will help see if using more frequently used words helps better identify which president is speaking. As seen in the initial data exploration of each presidents top 10 words, there may however be significant overlap in each presidents most frequently used words and so this may not be an effective way of improving the predictions. However there maybe be unique words that each president says often that help differentiate them from one another. The top 200 words format is similar to the bag of words format in that the columns are words that make up each presidents most repeated words and the rows represent the sentences. Both counts and TFIDF scores will be used in the 200 top words data input format.</p>
+<p>The above differing formats result in four different types of format of input data, two are what will be referred to as ‘all words’ formats which contain all the words except for those removed in cleaning. The one ‘all words’ format uses counts of word so form a bag of words model and the other ‘all words’ format uses TFIDF scores. The two ‘200 words’ input formats refer to those inputs that use only the top 200 most repeated words from each president. Again, one of these uses word counts and the other uses TFIDF values.</p>
+<p>Word embedding???</p>
+<div class="cell">
+
+</div>
 <div class="cell">
 <div class="cell-output cell-output-stderr">
 <pre><code>Joining with `by = join_by(sentence_ID)`
@@ -274,20 +306,69 @@ Joining with `by = join_by(sentence_ID)`</code></pre>
 </div>
 </section>
 <section id="training-validation-and-test-splits" class="level2">
-<h2 class="anchored" data-anchor-id="training-validation-and-test-splits">Training, Validation and Test splits</h2>
-<p>Now need to create training, validation and test splits with the data - by president so that classes are balanced.</p>
-<p>Training = 60% Validation = 30% Test = 10%</p>
+<h2 class="anchored" data-anchor-id="training-validation-and-test-splits">Training, Validation and Test Splits</h2>
+<p>Having constructed the required data formats for the predictive model, the data must be split into training, validation and test sets before the predictive models are built. The split that will be used here is 60% training, 30% validation and 10% test data. The data splits are done grouping by president so that the classes of each president are balance in training , validation and test sets.</p>
+<p>The seed was set to 2023 to ensure reproducibility. The training, validation and test sets were created by sampling from the sentence_ID variable and using this along with the anti_join() function to create the associated training, validation and test set vector of indices. For the different data formats, eg bag of words with counts versus TFIDF, the training data was created by selecting those rows where the sentence_ID variable matches those IDs in the training set vector of indices.</p>
+<p>The training set will be used to build the different predictive models. The validation set will be used to select which hyper-parameters or model configuration to use. The test set will provide a final measure of performance of the selected model.</p>
 <div class="cell">
 <div class="cell-output cell-output-stderr">
 <pre><code>Joining with `by = join_by(sentence_ID)`
 Joining with `by = join_by(sentence_ID)`</code></pre>
 </div>
 </div>
-<p>Now that we have got the ids for the train, validation and test set we can start fitting some models. Starting with a simple classfication tree and using count bag of words.</p>
 <div class="cell">
-<div class="cell-output-display">
-<p><img src="report_working_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+
 </div>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<p>Having outlined the various data input structures that will be considered in the models as well as how the data has been split into its training, validation and testing classes, the predictive models that are used are now outlined and methods to implement them explained.</p>
+<section id="classification-tree" class="level3">
+<h3 class="anchored" data-anchor-id="classification-tree">Classification Tree</h3>
+<p>The first predictive model applied to the data is a simple classification tree. A classification tree is a decision tree that parititions the data on different variables in order to categorize each observation into a class. In this case a classification tree would take a sentence and based on the word counts or TFIDF counts, classify the sentence as being from one of the four presidents.</p>
+<p>A classification tree was fit using the rpart() function in R. Four models were fit, one on each of the four training data sets which are the full bag-of-words counts data, the full TFIDF data, the top 200 bag of words count data and the top 200 TFIDF data. The ‘method’ argument was set to ‘class’ because the response is categorical. The remaining arguments of the rpart() function were left at the default settings. For the classification tree model, no tuning was performed.</p>
+</section>
+<section id="random-forest" class="level3">
+<h3 class="anchored" data-anchor-id="random-forest">Random Forest</h3>
+<p>The second predictive model that was fit was a random forest model. This is an ensemble learning method and follows on from a simple classification tree. This method uses a collection of different classification trees in order to classify observations into its classes and takes an aggregate of the trees decisions.</p>
+<p>NEED TO EXPLAIN THIS MORE. ONLY INCLUDE IF IT WORKS</p>
+</section>
+<section id="feed-forward-neural-network" class="level3">
+<h3 class="anchored" data-anchor-id="feed-forward-neural-network">Feed-Forward Neural Network</h3>
+<p>A standard feed-forward neural network was fit to the different data types to predict the president who delivered the sentence. Here a number of different configurations of neural networks, with different numbers of layers and nodes were constructed and the validation set used to select the best model.</p>
+<p>Need a sentence here to explain what a neural network is.</p>
+<p>There are many architectures, or configurations, that can be done by varying the number of layers in the network, number of nodes per layers and other parameters such as learning rate and activation functions. The selection or ‘tuning’ of these parameters is done manually by fitting 4 different neural networks using the training data and selecting the optimal architecture based on the validation set performance. The differing configurations will be fit on the four different input data structures.</p>
+<p>What different configurations are done.</p>
+<p>These feed forward neural networks were built and trained using the keras package in R.</p>
+<p>Go through some details of what keras does.</p>
+<p>Structure of response for keras neural nets - one hot encoding</p>
+</section>
+<section id="convolutional-neural-network" class="level3">
+<h3 class="anchored" data-anchor-id="convolutional-neural-network">Convolutional Neural Network</h3>
+<p>A more advanced neural network is also fit to the data to see if performance is improved. A convolutional neural network.</p>
+<p>Explain this once its actually been done.</p>
+<p>Explain this - is word embedding essential?? If so maybe we only fit with one kind of data input</p>
+</section>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<p>Having outlined the methods and models implemented, the results of these models are now given.</p>
+<section id="classification-tree-1" class="level3">
+<h3 class="anchored" data-anchor-id="classification-tree-1">Classification Tree</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Classification Tree Results:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="do">## CT 1 - All Words - BoW Counts</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>training_all_BAG <span class="ot">=</span> <span class="fu">cbind</span>(Y_train_all_BAG, X_train_all_BAG)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>fit_all_BAG <span class="ot">&lt;-</span> <span class="fu">rpart</span>(Y_train_all_BAG <span class="sc">~</span> ., training_all_BAG, <span class="at">method =</span> <span class="st">'class'</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#plot(fit_all_BAG, main = 'Full Classification Tree')</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#text(fit_all_BAG, use.n = TRUE, all = TRUE, cex=.8)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>fittedtrain <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_all_BAG, <span class="at">type =</span> <span class="st">'class'</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>predtrain <span class="ot">&lt;-</span> <span class="fu">table</span>(training_all_BAG<span class="sc">$</span>Y_train_all_BAG, fittedtrain)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>predtrain</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           fittedtrain
             Mandela Mbeki Ramaphosa Zuma
@@ -296,26 +377,33 @@ Joining with `by = join_by(sentence_ID)`</code></pre>
   Ramaphosa       0     1       982    0
   Zuma            0     8       919   55</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>accuracy_all_BAG_train <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">diag</span>(predtrain))<span class="sc">/</span><span class="fu">sum</span>(predtrain), <span class="dv">3</span>) <span class="co"># training accuracy</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fittedtest <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_all_BAG, <span class="at">newdata =</span> <span class="fu">cbind</span>(Y_test_all_BAG, X_test_all_BAG), <span class="at">type =</span> <span class="st">'class'</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>predtest <span class="ot">&lt;-</span> <span class="fu">table</span>(Y_test_all_BAG, fittedtest)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>predtest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.281</code></pre>
+<pre><code>              fittedtest
+Y_test_all_BAG Mandela Mbeki Ramaphosa Zuma
+     Mandela         0     7       162    0
+     Mbeki           0    15       151    0
+     Ramaphosa       0     0       160    0
+     Zuma            0     5       153    9</code></pre>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>           fittedtest
-Y_val       Mandela Mbeki Ramaphosa Zuma
-  Mandela         0    22       473    0
-  Mbeki           0    27       449    0
-  Ramaphosa       0     0       510    0
-  Zuma            0     7       468   29</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.285</code></pre>
-</div>
-</div>
-<p>Clearly the classification tree is not doing very well on word counts bag of words model. What about tfidf</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="report_working_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
-</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>accuracy_all_BAG_test <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">diag</span>(predtest))<span class="sc">/</span><span class="fu">sum</span>(predtest), <span class="dv">3</span>) <span class="co"># test accuracy </span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="do">## CT 2 - All Words - TFIDF</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>training_all_TFIDF <span class="ot">=</span> <span class="fu">cbind</span>(Y_train_all_tfidf, X_train_all_tfidf)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>fit_all_TFIDF <span class="ot">&lt;-</span> <span class="fu">rpart</span>(Y_train_all_tfidf <span class="sc">~</span> ., training_all_TFIDF, <span class="at">method =</span> <span class="st">'class'</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#plot(fit_all_BAG, main = 'Full Classification Tree')</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#text(fit_all_BAG, use.n = TRUE, all = TRUE, cex=.8)</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>fittedtrain <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_all_TFIDF, <span class="at">type =</span> <span class="st">'class'</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>predtrain <span class="ot">&lt;-</span> <span class="fu">table</span>(training_all_TFIDF<span class="sc">$</span>Y_train_all_tfidf, fittedtrain)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>predtrain</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           fittedtrain
             Mandela Mbeki Ramaphosa Zuma
@@ -324,215 +412,257 @@ Y_val       Mandela Mbeki Ramaphosa Zuma
   Ramaphosa       0     1       982    0
   Zuma            0     8       919   55</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>accuracy_all_TFIDF_train <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">diag</span>(predtrain))<span class="sc">/</span><span class="fu">sum</span>(predtrain), <span class="dv">3</span>) <span class="co"># training accuracy</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>fittedtest <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_all_TFIDF, <span class="at">newdata =</span> <span class="fu">cbind</span>(Y_test_all_tfidf, X_test_all_tfidf), <span class="at">type =</span> <span class="st">'class'</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>predtest <span class="ot">&lt;-</span> <span class="fu">table</span>(Y_test_all_tfidf, fittedtest)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>predtest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.281</code></pre>
+<pre><code>                fittedtest
+Y_test_all_tfidf Mandela Mbeki Ramaphosa Zuma
+       Mandela         0     7       162    0
+       Mbeki           0    15       151    0
+       Ramaphosa       0     0       160    0
+       Zuma            0     5       153    9</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>accuracy_all_TFIDF_test <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">diag</span>(predtest))<span class="sc">/</span><span class="fu">sum</span>(predtest), <span class="dv">3</span>) <span class="co"># test accuracy </span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="do">## CT 3 - 200 Words - BoW Counts</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>training_200_BAG <span class="ot">=</span> <span class="fu">cbind</span>(Y_train_200_BAG, X_train_200_BAG)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>fit_200_BAG <span class="ot">&lt;-</span> <span class="fu">rpart</span>(training_200_BAG<span class="sc">$</span>Y_train_200_BAG <span class="sc">~</span> ., <span class="at">data =</span>  training_200_BAG, <span class="at">method =</span> <span class="st">'class'</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_200_BAG, <span class="at">main =</span> <span class="st">'Full Classification Tree'</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(fit_200_BAG, <span class="at">use.n =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">cex=</span>.<span class="dv">8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="report_working_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fittedtrain <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_200_BAG, <span class="at">newdata =</span> <span class="fu">cbind</span>(Y_train_200_BAG, X_train_200_BAG), <span class="at">type =</span> <span class="st">'class'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>predtrain <span class="ot">&lt;-</span> <span class="fu">table</span>(training_200_BAG<span class="sc">$</span>Y_train_200_BAG, fittedtrain)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>predtrain</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>           fittedtest
-Y_val       Mandela Mbeki Ramaphosa Zuma
-  Mandela         0    22       473    0
-  Mbeki           0    27       449    0
-  Ramaphosa       0     0       510    0
-  Zuma            0     7       468   29</code></pre>
+<pre><code>           fittedtrain
+            Mandela Mbeki Ramaphosa Zuma
+  Mandela         0    31       900    0
+  Mbeki           0    77       893    2
+  Ramaphosa       0     1       934    0
+  Zuma            0     8       848   55</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>accuracy_200_BAG_train <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">diag</span>(predtrain))<span class="sc">/</span><span class="fu">sum</span>(predtrain), <span class="dv">3</span>) <span class="co"># training accuracy</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>fittedtest <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_200_BAG, <span class="at">newdata =</span> <span class="fu">cbind</span>(Y_test_200_BAG, X_test_200_BAG), <span class="at">type =</span> <span class="st">'class'</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>predtest <span class="ot">&lt;-</span> <span class="fu">table</span>(Y_test_200_BAG, fittedtest)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>predtest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.285</code></pre>
+<pre><code>              fittedtest
+Y_test_200_BAG Mandela Mbeki Ramaphosa Zuma
+     Mandela         0     7       156    0
+     Mbeki           0    15       141    0
+     Ramaphosa       0     0       150    0
+     Zuma            0     5       145    9</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>accuracy_200_BAG_test <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">diag</span>(predtest))<span class="sc">/</span><span class="fu">sum</span>(predtest), <span class="dv">3</span>) <span class="co"># test accuracy </span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="do">## CT 4 - 200 Words - TFIDF</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>training_200_TFIDF <span class="ot">=</span> <span class="fu">cbind</span>(Y_train_200_tfidf, X_train_200_tfidf)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>fit_200_TFIDF <span class="ot">&lt;-</span> <span class="fu">rpart</span>(Y_train_200_tfidf <span class="sc">~</span> ., training_200_TFIDF, <span class="at">method =</span> <span class="st">'class'</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_200_TFIDF, <span class="at">main =</span> <span class="st">'Full Classification Tree'</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(fit_200_TFIDF, <span class="at">use.n =</span> <span class="cn">TRUE</span>, <span class="at">all =</span> <span class="cn">TRUE</span>, <span class="at">cex=</span>.<span class="dv">8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="report_working_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fittedtrain <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_200_TFIDF, <span class="at">newdata =</span> <span class="fu">cbind</span>(Y_train_200_tfidf, X_train_200_tfidf), <span class="at">type =</span> <span class="st">'class'</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>predtrain <span class="ot">&lt;-</span> <span class="fu">table</span>(training_200_TFIDF<span class="sc">$</span>Y_train_200_tfidf, fittedtrain)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>predtrain</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           fittedtrain
+            Mandela Mbeki Ramaphosa Zuma
+  Mandela         0    31       900    0
+  Mbeki           0    77       893    2
+  Ramaphosa       0     1       934    0
+  Zuma            0     8       848   55</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>accuracy_200_TFIDF_train <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">diag</span>(predtrain))<span class="sc">/</span><span class="fu">sum</span>(predtrain), <span class="dv">3</span>) <span class="co"># training accuracy</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>fittedtest <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_200_TFIDF, <span class="at">newdata =</span> <span class="fu">cbind</span>(Y_test_all_tfidf, X_test_all_tfidf), <span class="at">type =</span> <span class="st">'class'</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>predtest <span class="ot">&lt;-</span> <span class="fu">table</span>(Y_test_200_tfidf, fittedtest)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>predtest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                fittedtest
+Y_test_200_tfidf Mandela Mbeki Ramaphosa Zuma
+       Mandela         0     7       156    0
+       Mbeki           0    14       142    0
+       Ramaphosa       0     1       149    0
+       Zuma            0     4       148    7</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>accuracy_200_TFIDF_test <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">sum</span>(<span class="fu">diag</span>(predtest))<span class="sc">/</span><span class="fu">sum</span>(predtest), <span class="dv">3</span>) <span class="co"># test accuracy </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><u><em>Table 2: Classification Accuracy of Simple Classification Tree</em></u></p>
+<table class="table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Data Input Structure.</th>
+<th>All BOW Counts</th>
+<th>All TFIDF</th>
+<th>200 Words Counts</th>
+<th>200 Words TFIDF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Training Classification Accuracy</td>
+<td>0.281</td>
+<td>0.281</td>
+<td>0.284</td>
+<td>0.284</td>
+</tr>
+<tr class="even">
+<td>Test Classification Accuracy</td>
+<td>0.278</td>
+<td>0.278</td>
+<td>0.277</td>
+<td>0.271</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+
 </div>
 <div class="cell">
 
 </div>
-<p>Clearly the classification tree is not doing well so now we try a neural network.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>      <span class="co"># This may be ruining the run</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>      <span class="co"># noticed that after running this, your </span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Dimensions don't match up</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#zero_columns_train &lt;- apply(X_train, 2, function(col) all(col == 0))</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#X_train = X_train[,!zero_columns_train]</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#X_val = X_val[,!zero_columns_train]</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#X_test = X_test[,!zero_columns_train]</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>training_data_tfidf <span class="ot">=</span> tfidf <span class="sc">%&gt;%</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">right_join</span>(train_ids, <span class="at">by=</span><span class="st">'sentence_ID'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">select</span>(<span class="sc">-</span>sentence_ID)</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>X_train <span class="ot">=</span> training_data_tfidf[,<span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(training_data_tfidf)]</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>Y_train <span class="ot">=</span> <span class="fu">as.factor</span>(training_data_tfidf<span class="sc">$</span>president_name)</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>val_data_tfidf <span class="ot">=</span> tfidf <span class="sc">%&gt;%</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">right_join</span>(val_ids, <span class="at">by=</span><span class="st">'sentence_ID'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">select</span>(<span class="sc">-</span>sentence_ID)</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>X_val <span class="ot">=</span> val_data_tfidf[,<span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(val_data_tfidf)]</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>Y_val <span class="ot">=</span> <span class="fu">as.factor</span>(val_data_tfidf<span class="sc">$</span>president_name)</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>test_data_tfidf <span class="ot">=</span> tfidf <span class="sc">%&gt;%</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">right_join</span>(test_ids, <span class="at">by=</span><span class="st">'sentence_ID'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">select</span>(<span class="sc">-</span>sentence_ID)</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>X_test <span class="ot">=</span> test_data_tfidf[,<span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(test_data_tfidf)]</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>Y_test <span class="ot">=</span> <span class="fu">as.factor</span>(test_data_tfidf<span class="sc">$</span>president_name)</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Added this in</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>X_train <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(X_train)</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>X_val <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(X_val)</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This is how keras takes in one-hot encoding</span></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>Y_train <span class="ot">&lt;-</span> <span class="fu">to_categorical</span>(<span class="fu">as.integer</span>(<span class="fu">unlist</span>(Y_train)) <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>Y_val  <span class="ot">&lt;-</span> <span class="fu">to_categorical</span>(<span class="fu">as.integer</span>(<span class="fu">unlist</span>(Y_val)) <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">100</span>, <span class="at">input_shape =</span> <span class="fu">c</span>(<span class="dv">9085</span>), <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">4</span>, <span class="at">activation =</span> <span class="st">"softmax"</span>)</span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Model: "sequential"
-________________________________________________________________________________
- Layer (type)                       Output Shape                    Param #     
-================================================================================
- dense_1 (Dense)                    (None, 100)                     908600      
- dense (Dense)                      (None, 4)                       404         
-================================================================================
-Total params: 909004 (3.47 MB)
-Trainable params: 909004 (3.47 MB)
-Non-trainable params: 0 (0.00 Byte)
-________________________________________________________________________________</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"categorical_crossentropy"</span>,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="st">"adam"</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="st">"accuracy"</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(X_train, Y_train, <span class="at">epochs =</span> <span class="dv">40</span>, <span class="at">batch_size =</span> <span class="dv">100</span>, <span class="at">verbose =</span> <span class="dv">0</span>) </span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="report_working_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">evaluate</span>(X_val, Y_val, <span class="at">batch_size=</span><span class="dv">128</span>, <span class="at">verbose =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>16/16 - 0s - loss: 1.9720 - accuracy: 0.5446 - 74ms/epoch - 5ms/step</code></pre>
-</div>
+
 </div>
 <p>Now lets try a cnn</p>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "it must be electrified and supplied with water"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[[1]]
-[1] 1 2 3 4 5 6 7 8</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$it
-[1] 1
-
-$must
-[1] 2
-
-$be
-[1] 3
-
-$electrified
-[1] 4
-
-$and
-[1] 5
-
-$supplied
-[1] 6
-
-$with
-[1] 7
-
-$water
-[1] 8</code></pre>
-</div>
-<div class="cell-output-display">
-<p><img src="report_working_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Model: "sequential_1"
-________________________________________________________________________________
- Layer (type)                       Output Shape                    Param #     
-================================================================================
- embedding (Embedding)              (None, 15, 10)                  10000       
- dropout (Dropout)                  (None, 15, 10)                  0           
- flatten (Flatten)                  (None, 150)                     0           
- dense_3 (Dense)                    (None, 100)                     15100       
- dense_2 (Dense)                    (None, 4)                       404         
-================================================================================
-Total params: 25504 (99.62 KB)
-Trainable params: 25504 (99.62 KB)
-Non-trainable params: 0 (0.00 Byte)
-________________________________________________________________________________</code></pre>
-</div>
-<div class="cell-output-display">
-<p><img src="report_working_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
-</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>max_features <span class="ot">&lt;-</span> <span class="dv">1000</span>        <span class="co"># choose max_features most popular words</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="ot">=</span> <span class="fu">text_tokenizer</span>(<span class="at">num_words =</span> max_features)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fit_text_tokenizer</span>(tokenizer, sona_sentences_FINAL<span class="sc">$</span>sentences[<span class="dv">4</span>])</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>sona_sentences_FINAL<span class="sc">$</span>sentences[<span class="dv">4</span>]</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>tts <span class="ot">&lt;-</span> <span class="fu">texts_to_sequences</span>(tokenizer, sona_sentences_FINAL<span class="sc">$</span>sentences[<span class="dv">4</span>])</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>tts</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>tokenizer<span class="sc">$</span>word_index[tts[[<span class="dv">1</span>]]]</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>sequences <span class="ot">=</span> tokenizer<span class="sc">$</span><span class="fu">texts_to_sequences</span>(sona_sentences_FINAL<span class="sc">$</span>sentences)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>train_row <span class="ot">=</span> train_ids<span class="sc">$</span>sentence_ID</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>val_row <span class="ot">=</span> val_ids<span class="sc">$</span>sentence_ID</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="fu">as.factor</span>(sona_sentences_FINAL<span class="sc">$</span>president_name)</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="fu">as.integer</span>(y)</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>val <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>x <span class="ot">&lt;-</span> sequences[train_row]</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>val<span class="sc">$</span>x <span class="ot">&lt;-</span>  sequences[val_row]</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>y <span class="ot">&lt;-</span> y[train_row]</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>val<span class="sc">$</span>y <span class="ot">&lt;-</span>  y[val_row]</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">unlist</span>(<span class="fu">lapply</span>(sequences, length)), <span class="at">main =</span> <span class="st">"Sequence length after tokenization"</span>)</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>maxlen <span class="ot">&lt;-</span> <span class="dv">15</span>            </span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>x_train <span class="ot">&lt;-</span> train<span class="sc">$</span>x <span class="sc">%&gt;%</span> <span class="fu">pad_sequences</span>(<span class="at">maxlen =</span> maxlen)</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>x_test <span class="ot">&lt;-</span> val<span class="sc">$</span>x <span class="sc">%&gt;%</span> <span class="fu">pad_sequences</span>(<span class="at">maxlen =</span> maxlen)</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_embedding</span>(max_features, <span class="at">output_dim =</span> <span class="dv">10</span>, <span class="at">input_length =</span> maxlen) <span class="sc">%&gt;%</span></span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dropout</span>(<span class="fl">0.2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_flatten</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">100</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">4</span>, <span class="at">activation =</span> <span class="st">"softmax"</span>)</span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"categorical_crossentropy"</span>,</span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="st">"adam"</span>,</span>
+<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="st">"accuracy"</span></span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(x_train,Y_train,</span>
+<span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">batch_size =</span> <span class="dv">600</span>, <span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
+<span id="cb23-51"><a href="#cb23-51" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>embedding_dims <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_embedding</span>(max_features, <span class="at">output_dim =</span> embedding_dims, <span class="at">input_length =</span> maxlen) <span class="sc">%&gt;%</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dropout</span>(<span class="fl">0.2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_conv_1d</span>(<span class="at">filters =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">8</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_max_pooling_1d</span>(<span class="at">pool_size =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_flatten</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">300</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">4</span>, <span class="at">activation =</span> <span class="st">"softmax"</span>)</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Model: "sequential_2"
-________________________________________________________________________________
- Layer (type)                       Output Shape                    Param #     
-================================================================================
- embedding_1 (Embedding)            (None, 15, 10)                  10000       
- dropout_1 (Dropout)                (None, 15, 10)                  0           
- conv1d (Conv1D)                    (None, 8, 64)                   5184        
- max_pooling1d (MaxPooling1D)       (None, 4, 64)                   0           
- flatten_1 (Flatten)                (None, 256)                     0           
- dense_5 (Dense)                    (None, 300)                     77100       
- dense_4 (Dense)                    (None, 4)                       1204        
-================================================================================
-Total params: 93488 (365.19 KB)
-Trainable params: 93488 (365.19 KB)
-Non-trainable params: 0 (0.00 Byte)
-________________________________________________________________________________</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"categorical_crossentropy"</span>,</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="st">"adam"</span>,</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="st">"accuracy"</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(x_train,Y_train,</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">batch_size =</span> <span class="dv">600</span>, <span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="report_working_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">evaluate</span>(x_test, Y_val, <span class="at">batch_size=</span><span class="dv">600</span>, <span class="at">verbose =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>4/4 - 0s - loss: 1.3973 - accuracy: 0.2413 - 63ms/epoch - 16ms/step</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>embedding_dims <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_embedding</span>(max_features, <span class="at">output_dim =</span> embedding_dims, <span class="at">input_length =</span> maxlen) <span class="sc">%&gt;%</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dropout</span>(<span class="fl">0.2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_conv_1d</span>(<span class="at">filters =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">8</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_max_pooling_1d</span>(<span class="at">pool_size =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_flatten</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">300</span>, <span class="at">activation =</span> <span class="st">"relu"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="dv">4</span>, <span class="at">activation =</span> <span class="st">"softmax"</span>)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">"categorical_crossentropy"</span>,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="st">"adam"</span>,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="st">"accuracy"</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">fit</span>(x_train,Y_train,</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">batch_size =</span> <span class="dv">600</span>, <span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(history)</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> model <span class="sc">%&gt;%</span> <span class="fu">evaluate</span>(x_test, Y_val, <span class="at">batch_size=</span><span class="dv">600</span>, <span class="at">verbose =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Lets try random forest with tfidf</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>X_tfidf <span class="ot">=</span> tfidf[,<span class="dv">3</span><span class="sc">:</span><span class="fu">ncol</span>(tfidf)]</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>X_tfidf_train <span class="ot">=</span> X_tfidf[train_ids<span class="sc">$</span>sentence_ID,]</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>Y_train_forest <span class="ot">=</span> (tfidf[train_ids<span class="sc">$</span>sentence_ID,<span class="dv">2</span>])</span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Assuming your response variable is in 'y' and your bag of words matrix is in 'X'</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">ranger</span>(tfidf[train_ids<span class="sc">$</span>sentence_ID,<span class="dv">2</span>], tfidf[train_ids<span class="sc">$</span>sentence_ID,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">2</span>)], <span class="at">num.trees =</span> <span class="dv">100</span>, <span class="at">importance =</span> <span class="st">"permutation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>X_tfidf <span class="ot">=</span> tfidf[,<span class="dv">3</span><span class="sc">:</span><span class="fu">ncol</span>(tfidf)]</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>X_tfidf_train <span class="ot">=</span> X_tfidf[train_ids<span class="sc">$</span>sentence_ID,]</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>Y_train_forest <span class="ot">=</span> (tfidf[train_ids<span class="sc">$</span>sentence_ID,<span class="dv">2</span>])</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Assuming your response variable is in 'y' and your bag of words matrix is in 'X'</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">ranger</span>(tfidf[train_ids<span class="sc">$</span>sentence_ID,<span class="dv">2</span>], tfidf[train_ids<span class="sc">$</span>sentence_ID,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">2</span>)], <span class="at">num.trees =</span> <span class="dv">100</span>, <span class="at">importance =</span> <span class="st">"permutation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>What about multinomial logistic regression?</p>
+</section>
+<section id="random-forest-1" class="level3">
+<h3 class="anchored" data-anchor-id="random-forest-1">Random Forest</h3>
+</section>
+<section id="feed-forward-neural-network-1" class="level3">
+<h3 class="anchored" data-anchor-id="feed-forward-neural-network-1">Feed-Forward Neural Network</h3>
+</section>
+<section id="convolutional-neural-network-1" class="level3">
+<h3 class="anchored" data-anchor-id="convolutional-neural-network-1">Convolutional Neural Network</h3>
+</section>
+<section id="overall-test-set-results" class="level3">
+<h3 class="anchored" data-anchor-id="overall-test-set-results">Overall Test set results</h3>
+</section>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section"></h3>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<section id="which-type-of-predictive-model-had-most-satisfactory-results" class="level3">
+<h3 class="anchored" data-anchor-id="which-type-of-predictive-model-had-most-satisfactory-results">Which type of predictive model had most satisfactory results</h3>
+</section>
+<section id="which-input-data-structure-seemed-to-be-best" class="level3">
+<h3 class="anchored" data-anchor-id="which-input-data-structure-seemed-to-be-best">Which input data structure seemed to be best</h3>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
