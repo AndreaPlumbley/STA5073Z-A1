@@ -35,7 +35,7 @@ library(keras)
 library(nnet)
 library(ranger)
 
-## Read the data in: code given by Ian  
+## Read the data in: code given by Ian Durbach
 
 # read in text data files and organise these into a data frame
 filenames <- c('1994_post_elections_Mandela.txt', '1994_pre_elections_deKlerk.txt', '1995_Mandela.txt', '1996_Mandela.txt', '1997_Mandela.txt', '1998_Mandela.txt', 
@@ -140,14 +140,13 @@ sona_sentences_cleaned = sona_sentences %>%
   mutate(sentences =str_replace_all(sona_sentences$sentence, replace_reg, ''))  %>%
   select(-sentence)
 
-#sona_words = sona_sentences_cleaned %>% 
-#  unnest_tokens(word, sentences, token = "words")
 ```
 
 ```{r, echo = FALSE, include = FALSE}
 unique(sona_sentences_cleaned$president_name)
 table(sona_sentences_cleaned$president_name)
 
+#select top four presidents - most sentences
 sona_sentences_4 = sona_sentences_cleaned %>% 
   filter(president_name=="Mandela"|
            president_name=="Mbeki"|
@@ -181,7 +180,7 @@ all_words = sona_words %>%
   count() %>%
   ungroup()
 
-## Take out number or words with fewer than 3 letters
+## Take out number or words with fewer than 3 letters and containing digits
 all_words_cleaned = all_words %>%
                     filter(!str_detect(word, "\\d")) %>%
                     filter(str_length(word) > 2)
@@ -198,6 +197,7 @@ sentence_word_links = sona_words %>%
   mutate(total = sum(n)) %>%
   ungroup()
 
+#create bag of words
 bag_of_words = sentence_word_links %>% 
   select(sentence_ID, word, n) %>% 
   pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
@@ -312,12 +312,12 @@ sentence_tdf <- sentence_word_links%>%
   mutate(tf = n/total, tf_idf = tf * idf)
 
 sentence_tdf <- sentence_tdf %>% 
-  select(-idf, -tf, -tf_idf) %>% #remove the old ones we worked out
+  select(-idf, -tf, -tf_idf) %>%      #remove the old ones we worked out
   bind_tf_idf(word, sentence_ID, n)   #replace with values from tidytext
 
 
 tfidf <- sentence_tdf %>% 
-  select(sentence_ID, word, tf_idf) %>%  # note the change, using tf-idf
+  select(sentence_ID, word, tf_idf) %>% 
   pivot_wider(names_from = word, values_from = tf_idf, values_fill = 0) %>%  
   left_join(sona_sentences_FINAL %>% select(sentence_ID,president_name)) %>%
   select(sentence_ID, president_name, everything())
@@ -345,7 +345,7 @@ sentence_word_links_common_words = sentence_word_links %>%
 #sort(unique(common_words_remove_stop_final$word))
 #sort(unique(sentence_word_links_common_words$word))
 
-## NEED SOME EDA PLOTS
+
 bag_of_words_200 = sentence_word_links_common_words %>% 
   select(sentence_ID, word, n) %>% 
   pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
@@ -370,10 +370,6 @@ sentence_tdf_common <- sentence_tdf_common %>%
   select(-idf, -tf, -tf_idf) %>% #remove the old ones we worked out
   bind_tf_idf(word, sentence_ID, n)   #replace with values from tidytext
 
-
-# TREE with TFIDF 
-## CHECK if deklerk and mothahle words are here 
-
 tfidf_common <- sentence_tdf_common %>% 
   select(sentence_ID, word, tf_idf) %>%  # note the change, using tf-idf
   pivot_wider(names_from = word, values_from = tf_idf, values_fill = 0) %>%  
@@ -393,6 +389,7 @@ The training set will be used to build the different predictive models. The vali
 ```{r, echo = FALSE, message=FALSE, warning=FALSE}
 set.seed(2023)
 
+## create training ids, validation ids and test set ids
 sentences_ids = data.frame(sentence_ID = (bag_of_words$sentence_ID))
 N = nrow(sentences_ids)
 
