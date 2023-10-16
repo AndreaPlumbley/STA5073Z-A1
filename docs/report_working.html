@@ -124,7 +124,10 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><u>Discussion</u></a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><u>Conclusion</u></a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><u>References</u></a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><u>References</u></a>
+  <ul class="collapse">
+  <li><a href="#github-repository-link" id="toc-github-repository-link" class="nav-link" data-scroll-target="#github-repository-link">GitHub Repository Link:</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -385,32 +388,32 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td>NN1 Validation Classification Accuracy</td>
-<td>0.539</td>
-<td>0.563</td>
-<td>0.492</td>
-<td>0.448</td>
+<td>0.544</td>
+<td>0.556</td>
+<td>0.441</td>
+<td>0.45</td>
 </tr>
 <tr class="even">
 <td>NN2 Validation Classification Accuracy</td>
-<td>0.515</td>
-<td>0.522</td>
-<td>0.44</td>
-<td>0.437</td>
+<td>0.505</td>
+<td>0.523</td>
+<td>0.485</td>
+<td>0.442</td>
 </tr>
 <tr class="odd">
 <td>NN3 Validation Classification Accuracy</td>
-<td>0.535</td>
-<td>0.554</td>
-<td>0.456</td>
-<td>0.457</td>
+<td>0.54</td>
+<td>0.548</td>
+<td>0.446</td>
+<td>0.453</td>
 </tr>
 </tbody>
 </table>
-<p>An improvement is seen for these neural network classification models from the boosted tree models with the models using all words having over 50% classification accuracy. In general the neural networks that use all words perform better at classifying the presidents than the models which use only the top 200 words used by each president. Comparing both input structure that use all words, it can be seen that the TFIDF input structure performs slightly better than the standard counts bag of words input data structure. In terms of the three different network architectures the best network architecture depends on the input data structure used. For the BOW counts data, the NN1 and NN3 have almost the same accuracy with NN2 slightly lower. For the TFIDF data, the simplest neural network performs the best with a classification accuracy of 0.563. The model NN1, with TFIDF data has the highest validation set accuracy and so is selected as the best model.</p>
+<p>An improvement is seen for these neural network classification models from the boosted tree models with the models using all words having over 50% classification accuracy. In general the neural networks that use all words perform better at classifying the presidents than the models which use only the top 200 words used by each president. Comparing both input structure that use all words, it can be seen that the TFIDF input structure performs slightly better than the standard counts bag of words input data structure. In terms of the three different network architectures the best network architecture depends on the input data structure used. For the BOW counts data, the NN1 and NN3 have almost the same accuracy with NN2 slightly lower. For the TFIDF data, the simplest neural network performs the best with a classification accuracy of 0.556. The model NN1, with TFIDF data has the highest validation set accuracy and so is selected as the best model.</p>
 <div class="cell">
 
 </div>
-<p>The test data set is applied to this model to obtain a final prediction accuracy. The classification accuracy on the test data, using TFIDF input and NN1 is 0.573 . While this is not a very good classification accuracy it is much better than the naive classification approach (25%) and is fairly good in terms of the accuracy seen in other models so far.</p>
+<p>The test data set is applied to this model to obtain a final prediction accuracy. The classification accuracy on the test data, using TFIDF input and NN1 is 0.565 . While this is not a very good classification accuracy it is much better than the naive classification approach (25%) and is fairly good in terms of the accuracy seen in other models so far.</p>
 </section>
 <section id="convolutional-neural-network-1" class="level3">
 <h3 class="anchored" data-anchor-id="convolutional-neural-network-1">Convolutional Neural Network</h3>
@@ -440,12 +443,12 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td>Validation Classification Accuracy</td>
-<td>0.252</td>
-<td>0.254</td>
+<td>0.239</td>
+<td>0.248</td>
 </tr>
 </tbody>
 </table>
-<p>It is clear that the convolutional neural network does not do well at predicting the correct classification with the validation accuracy being the same as a naive prediction guess would be. The test set accuracy for CNN2, which performs only marginally better, is: 0.204 which is very poor predictive performance.</p>
+<p>It is clear that the convolutional neural network does not do well at predicting the correct classification with the validation accuracy being the same as a naive prediction guess would be. The test set accuracy for CNN2, which performs only marginally better, is: 0.216 which is very poor predictive performance.</p>
 </section>
 </section>
 <section id="discussion" class="level2">
@@ -471,8 +474,12 @@ ul.task-list li input[type="checkbox"] {
 <p>Wickham, H. 2022. _stringr: Simple, Consistent Wrappers for Common String Operations_. R package version 1.5.0, &lt;https://CRAN.R-project.org/package=stringr&gt;.</p>
 <p>Wickham H., François R., Henry L., Müller K., Vaughan D. 2023. _dplyr: A Grammar of Data Manipulation_. R package version 1.1.3, https://CRAN.R-project.org/package=dplyr.</p>
 <p>Zhou, C., Sun, C., Liu, Z. and Lau, F. 2015. <em>A C-LSTM Neural Network for Text Classification.</em> Department of Computer Science, University of Hong Kong.</p>
+<section id="github-repository-link" class="level3">
+<h3 class="anchored" data-anchor-id="github-repository-link">GitHub Repository Link:</h3>
+<p>https://github.com/AndreaPlumbley/STA5073Z-A1</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
