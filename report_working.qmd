@@ -1118,4 +1118,10 @@ Zhou, C., Sun, C., Liu, Z. and Lau, F. 2015. *A C-LSTM Neural Network for Text C
 
 ### GitHub Repository Link:
 
-https://github.com/AndreaPlumbley/STA5073Z-A1
+[GitHub Repo Link](https://github.com/AndreaPlumbley/STA5073Z-A1)
+
+URL: https://github.com/AndreaPlumbley/STA5073Z-A1
+
+[GitHub Pages Website Link](https://andreaplumbley.github.io/STA5073Z-A1/)
+
+URL:https://andreaplumbley.github.io/STA5073Z-A1/

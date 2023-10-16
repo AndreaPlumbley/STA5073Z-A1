@@ -3,7 +3,9 @@ title: "Welcome!"
 ---
 
 Name: Andrea Plumbley
+
 Student Number: PLMAND002
+
 Course Code: STA5073Z
 
 This is a website for the submission of Assignment 1. The report for submission can be found on the Asignment 1: Report tab. 
@@ -30,4 +32,5 @@ Note that agreement to this statement does not exonerate you from the University
 (http://www.uct.ac.za/uct/policies/plagiarism_students.pdf).
 
 Signature: A Plumbley
+
 Date: 16/10/2023
