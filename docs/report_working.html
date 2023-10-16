@@ -88,10 +88,6 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link active" href="./report_working.html" aria-current="page">
  <span class="menu-text">Assignment 1: Report</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./Appendix.html">
- <span class="menu-text">Appendix</span></a>
-  </li>  
 </ul>
               <div id="quarto-search" class="" title="Search"></div>
           </div> <!-- /navcollapse -->
@@ -109,7 +105,6 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
   <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#literature-review" id="toc-literature-review" class="nav-link" data-scroll-target="#literature-review">Literature Review</a></li>
   <li><a href="#data-cleaning-tokenization-and-exploration" id="toc-data-cleaning-tokenization-and-exploration" class="nav-link" data-scroll-target="#data-cleaning-tokenization-and-exploration"><u>Data Cleaning, Tokenization, and Exploration</u></a></li>
   <li><a href="#data-input-structures" id="toc-data-input-structures" class="nav-link" data-scroll-target="#data-input-structures"><u>Data Input Structures</u></a></li>
   <li><a href="#training-validation-and-test-splits" id="toc-training-validation-and-test-splits" class="nav-link" data-scroll-target="#training-validation-and-test-splits"><u>Training, Validation and Test Splits</u></a></li>
@@ -129,6 +124,7 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><u>Discussion</u></a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><u>Conclusion</u></a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><u>References</u></a></li>
   </ul>
 </nav>
     </div>
@@ -164,11 +160,10 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>The aim of this assignment is to ‘predict the president’, to build predictive models that take in a sentence of text from a speech and predict which South African president said it. The data set given is a collection of 36 State of the Nation Addresses (SONA) in South Africa, delivered between 1994 and 2022. The assignment focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks and their classification performance. Before unpacking the data, a brief literature review is first given. Following this the data cleaning and exploration will be detailed and key features of the data discussed. The methods to format the data as well as the training, validation and test data splits will be outlined. The methods used to construct the different predictive models will then be detailed. Following this, results of the predictive models will be presented and discussed and final conclusions made.</p>
-</section>
-<section id="literature-review" class="level2">
-<h2 class="anchored" data-anchor-id="literature-review">Literature Review</h2>
-<p>A brief summary of the literature on text classification techniques is now presented.</p>
+<p>The aim of this assignment is to ‘predict the president’, to build predictive models that take in a sentence of text from a speech and predict which South African president said it. The data set given is a collection of 36 State of the Nation Addresses (SONA) in South Africa, delivered between 1994 and 2022.</p>
+<p>A number of techniques exist in order to use text data to make predictions. Different methods of structuring that data give rise to different ways in which models can be built and predictions made. Today, there is a large volume of text data to classify which can not be done manually and so techniques to do this using models need to be developed (Prasanna et al., 2018). This has led to much research in the field of text classification, with many finding that artifical neural networks give good classification results (Prasanna et al., 2018). More complex models such as convolutional neural networks and recurrent neural networks have also been shown to have good performance when classifying text data (Zhou et al.&nbsp;2015).</p>
+<p>The assignment focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks and their classification performance. Neural networks as considered due to the research suggesting that these models perform well at the task at hand. Classification trees and boosted trees are also used for prediction in order to compare the performance of the neural networks with other models and see if there are significant improvements.</p>
+<p>First the data cleaning process and initial data exploration will be detailed and key features of the data discussed. The methods to format the data as well as the training, validation and test data splits will be outlined. The methods used to construct the different predictive models will then be detailed. Following this, results of the predictive models will be presented and discussed and final conclusions made.</p>
 </section>
 <section id="data-cleaning-tokenization-and-exploration" class="level2">
 <h2 class="anchored" data-anchor-id="data-cleaning-tokenization-and-exploration"><u>Data Cleaning, Tokenization, and Exploration</u></h2>
@@ -216,13 +211,13 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="data-input-structures" class="level2">
 <h2 class="anchored" data-anchor-id="data-input-structures"><u>Data Input Structures</u></h2>
-<p>The text data needs to be put into a specific format for the predictive models for which we use a bag of words with counts and TFIDF values. In a bag of words model a document (in this case working with sentences) is represented by the set of words used in it (REFERENCE). In this case each row of the bag of words data frame represents a sentence where the columns are the possible words used. The number of columns is very large because all words used by all presidents, excluding the stop words or other words ‘cleaned away’, are represented on the columns. The matrix is relatively sparse in that for each row (sentence) only a couple columns have values due to only a few words being used in each sentence. The values are counts of how many times each word was used in each sentence. This format is the first type of input data structure use in the predictive models. (In results tables this format is referred to as ‘all BOW counts’).</p>
-<p>The second input structure used in the predictive models is similar in format to the above except that instead of the values being counts of each word in each sentence, the value is a TFIDF value. A TFIDF (Term-frequency-inverse-document-frequency) value is a way of distinguishing which words are more or less ‘important’ in the delivered speeches. This value is made up of two calculations:</p>
+<p>The text data needs to be put into a specific format for the predictive models for which we use a bag of words with counts and TFIDF values. In a bag of words model a document (in this case working with sentences) is represented by the set of words used in it. In this case each row of the bag of words data frame represents a sentence where the columns are the possible words used. The number of columns is very large because all words used by all presidents, excluding the stop words or other words ‘cleaned away’, are represented on the columns. The matrix is relatively sparse in that for each row (sentence) only a couple columns have values due to only a few words being used in each sentence. The values are counts of how many times each word was used in each sentence. This format is the first type of input data structure use in the predictive models. (In results tables this format is referred to as ‘all BOW counts’).</p>
+<p>The second input structure used in the predictive models is similar in format to the above except that instead of the values being counts of each word in each sentence, the value is a TFIDF value. A TFIDF (Term-frequency-inverse-document-frequency) value is a way of distinguishing which words are more or less ‘important’ in the delivered speeches (Silge &amp; Robinson, 2017) . This value is made up of two calculations:</p>
 <ul>
 <li><p>The term frequency (tf) which is the number of times a specific terms appears in a document, divided by the number of terms in that document.</p></li>
 <li><p>The inverse document frequency (idf) which is a measure of how many documents contain the specific terms and is calculated as the log of the total number of documents divided by the number of documents containing the specific word.</p></li>
 </ul>
-<p>The TFIDF value for a word is the product of the tf and idf measures. This data structure thus contains all the words as columns, the sentences as the rows (made up of different words) and the values in each cell are the TFIDF values. This data input structure may be more beneficial than the bag of words counts because it gives more information in terms of the relative importance or significance of the different words used in different sentences. (In results tables this format is referred to as ‘All TFIDF’).</p>
+<p>The TFIDF value for a word is the product of the tf and idf measures. This data structure thus contains all the words as columns, the sentences as the rows (made up of different words) and the values in each cell are the TFIDF values (Silge &amp; Robinson, 2017). This data input structure may be more beneficial than the bag of words counts because it gives more information in terms of the relative importance or significance of the different words used in different sentences. (In results tables this format is referred to as ‘All TFIDF’).</p>
 <p>An additional way of varying the input structure which also helps reduce the dimensions of input data is to use only the top 200 most frequent words used by each president. This will help see if using more frequently used words helps better identify which president is speaking. As seen in the initial data exploration of each presidents top 10 words, there may however be significant overlap in each presidents most frequently used words and so this may not be an effective way of improving the predictions. However there maybe be unique words that each president says often that help differentiate them from one another. The top 200 words format is similar to the bag of words format in that the columns are words that make up each presidents most repeated words and the rows represent the sentences. Both counts and TFIDF scores will be used in the 200 top words data input format. (In results tables these formats are referred to as ‘200 words counts’ and ‘200 words TFIDF’ respectively).</p>
 <p>The above differing formats result in four different types of format of input data, two are what will be referred to as ‘all words’ formats which contain all the words except for those removed in cleaning. The one ‘all words’ format uses counts of word so form a bag of words model and the other ‘all words’ format uses TFIDF scores. The two ‘200 words’ input formats refer to those inputs that use only the top 200 most repeated words from each president. Again, one of these uses word counts and the other uses TFIDF values.</p>
 <div class="cell">
@@ -254,7 +249,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="boosting---tree-based-method" class="level3">
 <h3 class="anchored" data-anchor-id="boosting---tree-based-method">Boosting - Tree Based Method</h3>
-<p>The second predictive model that was fit was boosted trees. This is an ensemble learning method and follows on from a simple classification tree. The boosting algorithm iteratively builds decision trees where each subsequent tree learns from previous trees mistakes and so the model gradually improves.</p>
+<p>The second predictive model that was fit was boosted trees. This is an ensemble learning method and follows on from a simple classification tree. The boosting algorithm iteratively builds decision trees where each subsequent tree learns from previous trees mistakes and so the model gradually improves (Hastie, Tibshirani &amp; Friedman, 2008).</p>
 <p>To fit the boosted tree the gbm() function from the gbm package was used in R. The formula was the same as in the case of the classfication tree, predicting the president based on the bag of words and TFIDF data. For the input data structures that used only the top 200 words of each president, the number of trees was set to 500. However the input data structure with all words was much larger and took much longer to fit and so only 10 trees were used for this large data set. The interaction.depth was set to 2, shrinkage to 0.01 and bag.fraction to 1 for all models. The remaining parameters were left at the default settings.</p>
 </section>
 <section id="feed-forward-neural-network" class="level3">
@@ -280,7 +275,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results"><u>Results</u></h2>
-<p>Having outlined the methods and models implemented, the results of these models are now given. For each of the models, where apllicable, the classification accuracy of the models are given in terms of the validation data set. If different configurations of the models have been presented the model with the best validation accuracy is selected and the test set then applied to this model to obtain a final measure of classification accuracy.</p>
+<p>Having outlined the methods and models implemented, the results of these models are now given. For each of the models, where applicable, the classification accuracy of the models are given in terms of the validation data set. If different configurations of the models have been presented the model with the best validation accuracy is selected and the test set then applied to this model to obtain a final measure of classification accuracy.</p>
 <section id="classification-tree-1" class="level3">
 <h3 class="anchored" data-anchor-id="classification-tree-1">Classification Tree</h3>
 <p>The results of the classification tree fit to the four different data input structures is given in Table 2 below. This table specifies the classification accuracy for both training and test sets. The validation set was not used here because no tuning was performed so no ‘best’ model was required to be selected. From the results it is clear that the classification tree does very poorly at classifying which president said each sentence with the model only being a slight improvement from one just randomly choosing a president (25%). The classification tree performs badly on all four data input structures and for this model the different input structures to do not improve the accuracy significantly.</p>
@@ -390,41 +385,44 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td>NN1 Validation Classification Accuracy</td>
-<td>0.54</td>
-<td>0.548</td>
-<td>0.49</td>
-<td>0.451</td>
+<td>0.539</td>
+<td>0.563</td>
+<td>0.492</td>
+<td>0.448</td>
 </tr>
 <tr class="even">
 <td>NN2 Validation Classification Accuracy</td>
-<td>0.494</td>
-<td>0.517</td>
-<td>0.482</td>
-<td>0.448</td>
+<td>0.515</td>
+<td>0.522</td>
+<td>0.44</td>
+<td>0.437</td>
 </tr>
 <tr class="odd">
 <td>NN3 Validation Classification Accuracy</td>
-<td>0.539</td>
-<td>0.555</td>
-<td>0.451</td>
-<td>0.463</td>
+<td>0.535</td>
+<td>0.554</td>
+<td>0.456</td>
+<td>0.457</td>
 </tr>
 </tbody>
 </table>
-<p>An improvement is seen for these neural network classification models from the boosted tree models with the models using all words having over 50% classification accuracy. In general the neural networks that use all words perform better at classifying the presidents than the models which use only the top 200 words used by each president. Comparing both input structure that use all words, it can be seen that the TFIDF input structure performs slightly better than the standard counts bag of words input data structure. In terms of the three different network architectures the best network architecture depends on the input data structure used. For the BOW counts data, the NN1 and NN3 have almost the same accuracy with NN2 slightly lower. For the TFIDF data, the simplest neural network performs the best with a classification accuracy of 0.548. The model NN1, with TFIDF data has the highest validation set accuracy and so is selected as the best model.</p>
+<p>An improvement is seen for these neural network classification models from the boosted tree models with the models using all words having over 50% classification accuracy. In general the neural networks that use all words perform better at classifying the presidents than the models which use only the top 200 words used by each president. Comparing both input structure that use all words, it can be seen that the TFIDF input structure performs slightly better than the standard counts bag of words input data structure. In terms of the three different network architectures the best network architecture depends on the input data structure used. For the BOW counts data, the NN1 and NN3 have almost the same accuracy with NN2 slightly lower. For the TFIDF data, the simplest neural network performs the best with a classification accuracy of 0.563. The model NN1, with TFIDF data has the highest validation set accuracy and so is selected as the best model.</p>
 <div class="cell">
 
 </div>
-<p>The test data set is applied to this model to obtain a final prediction accuracy. The classification accuracy on the test data, using TFIDF input and NN1 is 0.568 . While this is not a very good classification accuracy it is much better than the naive classification approach (25%) and is fairly good in terms of the accuracy seen in other models so far.</p>
+<p>The test data set is applied to this model to obtain a final prediction accuracy. The classification accuracy on the test data, using TFIDF input and NN1 is 0.573 . While this is not a very good classification accuracy it is much better than the naive classification approach (25%) and is fairly good in terms of the accuracy seen in other models so far.</p>
 </section>
 <section id="convolutional-neural-network-1" class="level3">
 <h3 class="anchored" data-anchor-id="convolutional-neural-network-1">Convolutional Neural Network</h3>
-<p>The final predictive method that was considered for the predict-the-president problem was a convolutional neural network. As already discussed in the methods section, this predictive model took in a different format of the data by using word embeddings for each of the sentences instead of the bag of words model of input data. Two different architectures were used here as outlined in the methods. Table 5 below summarizes the results of the two methods.</p>
+<p>The final predictive method that was considered for the predict-the-president problem was a convolutional neural network. As already discussed in the methods section, this predictive model took in a different format of the data by using word embeddings for each of the sentences instead of the bag of words model of input data.</p>
+<p>Figure 2 below gives a histogram of the sentence lengths using the embeddings, a max length of 15 was selected as the majority of sentences are less than 15 words with some substantial outlying sentences being very long. Padding was applied to those sentences which did not have enough words.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="report_working_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p><u><em>Figure 2: Sentence length with embeddings</em></u></p>
+<p>Two different architectures were used here as outlined in the methods. Table 5 below summarizes the results of the two methods.</p>
 <p><u><em>Table 5: Validation Set Classification Accuracy of CNN</em></u></p>
 <table class="table">
 <colgroup>
@@ -442,12 +440,12 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td>Validation Classification Accuracy</td>
-<td>0.245</td>
-<td>0.247</td>
+<td>0.252</td>
+<td>0.254</td>
 </tr>
 </tbody>
 </table>
-<p>It is clear that the convolutional neural network does not do well at predicting the correct classification with the validation accuracy being the same as a naive prediction guess would be. The test set accuracy for CNN2, which performs only marginally better, is: 0.233 which is very poor predictive performance.</p>
+<p>It is clear that the convolutional neural network does not do well at predicting the correct classification with the validation accuracy being the same as a naive prediction guess would be. The test set accuracy for CNN2, which performs only marginally better, is: 0.204 which is very poor predictive performance.</p>
 </section>
 </section>
 <section id="discussion" class="level2">
@@ -461,6 +459,18 @@ ul.task-list li input[type="checkbox"] {
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion"><u>Conclusion</u></h2>
 <p>While the results of the models presented here are not particularly strong, the data exploration and model building process have demonstrated how one is able to manipulate and work with text data in order to build predictive models were text is used as inputs. In addition the process has given an overview of a number of techniques that can be used to fit predictive models, including Classification Trees, Boosted Trees, Neural Networks and Convolutional Neural Networks. The model that performed the best for this problem was a simple neural network that had a single hidden layer with 50 nodes. This model took as input a sentence of a speech and was able to predict which of four South African presidents said the sentence with 57% accuracy.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references"><u>References</u></h2>
+<p>Allaire, J. and Chollet, F. 2023. _keras: R Interface to ‘Keras’_. R package version 2.13.0.9000, https://tensorflow.rstudio.com/.</p>
+<p>Hastie, T., Tibshirani, R. and Friedman, J. 2008. The Elements of Statistical Learning. Springer.</p>
+<p>Prasanna, P. and Rao, D. 2018. <em>Text classification using artificial neural networks.</em> International Journal of Engineering and Technology.</p>
+<p>R Core Team. 2022. R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.</p>
+<p>Silge, J. and Robinson, D. 2016. Text Mining with R, A tidy approach. O’Reilly.</p>
+<p>Silge, J. and Robinson, D. 2016. “tidytext: Text Mining and Analysis Using Tidy Data Principles in R.” _JOSS_, *1*(3). doi:10.21105/joss.00037 https://doi.org/10.21105/joss.00037.</p>
+<p>Wickham, H. 2022. _stringr: Simple, Consistent Wrappers for Common String Operations_. R package version 1.5.0, &lt;https://CRAN.R-project.org/package=stringr&gt;.</p>
+<p>Wickham H., François R., Henry L., Müller K., Vaughan D. 2023. _dplyr: A Grammar of Data Manipulation_. R package version 1.1.3, https://CRAN.R-project.org/package=dplyr.</p>
+<p>Zhou, C., Sun, C., Liu, Z. and Lau, F. 2015. <em>A C-LSTM Neural Network for Text Classification.</em> Department of Computer Science, University of Hong Kong.</p>
 
 
 </section>

@@ -9,11 +9,13 @@ A number of methods exist to manipulate text data in order to make predictions b
 
 ## Introduction
 
-The aim of this assignment is to 'predict the president', to build predictive models that take in a sentence of text from a speech and predict which South African president said it. The data set given is a collection of 36 State of the Nation Addresses (SONA) in South Africa, delivered between 1994 and 2022. The assignment focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks and their classification performance. Before unpacking the data, a brief literature review is first given. Following this the data cleaning and exploration will be detailed and key features of the data discussed. The methods to format the data as well as the training, validation and test data splits will be outlined. The methods used to construct the different predictive models will then be detailed. Following this, results of the predictive models will be presented and discussed and final conclusions made.
+The aim of this assignment is to 'predict the president', to build predictive models that take in a sentence of text from a speech and predict which South African president said it. The data set given is a collection of 36 State of the Nation Addresses (SONA) in South Africa, delivered between 1994 and 2022.
 
-## Literature Review
+A number of techniques exist in order to use text data to make predictions. Different methods of structuring that data give rise to different ways in which models can be built and predictions made. Today, there is a large volume of text data to classify which can not be done manually and so techniques to do this using models need to be developed (Prasanna et al., 2018). This has led to much research in the field of text classification, with many finding that artifical neural networks give good classification results (Prasanna et al., 2018). More complex models such as convolutional neural networks and recurrent neural networks have also been shown to have good performance when classifying text data (Zhou et al. 2015).
 
-A brief summary of the literature on text classification techniques is now presented.
+The assignment focuses on text mining and manipulation as well as predictive models, particularly focusing on neural networks and their classification performance. Neural networks as considered due to the research suggesting that these models perform well at the task at hand. Classification trees and boosted trees are also used for prediction in order to compare the performance of the neural networks with other models and see if there are significant improvements.
+
+First the data cleaning process and initial data exploration will be detailed and key features of the data discussed. The methods to format the data as well as the training, validation and test data splits will be outlined. The methods used to construct the different predictive models will then be detailed. Following this, results of the predictive models will be presented and discussed and final conclusions made.
 
 ```{r, echo=FALSE, messages=FALSE, warning=FALSE, include=FALSE}
 ## LOAD IN THE DATA
@@ -282,15 +284,15 @@ ggarrange(P1, P2, P3, P4, ncol = 2, nrow = 2)
 
 ## [Data Input Structures]{.underline}
 
-The text data needs to be put into a specific format for the predictive models for which we use a bag of words with counts and TFIDF values. In a bag of words model a document (in this case working with sentences) is represented by the set of words used in it (REFERENCE). In this case each row of the bag of words data frame represents a sentence where the columns are the possible words used. The number of columns is very large because all words used by all presidents, excluding the stop words or other words 'cleaned away', are represented on the columns. The matrix is relatively sparse in that for each row (sentence) only a couple columns have values due to only a few words being used in each sentence. The values are counts of how many times each word was used in each sentence. This format is the first type of input data structure use in the predictive models. (In results tables this format is referred to as 'all BOW counts').
+The text data needs to be put into a specific format for the predictive models for which we use a bag of words with counts and TFIDF values. In a bag of words model a document (in this case working with sentences) is represented by the set of words used in it. In this case each row of the bag of words data frame represents a sentence where the columns are the possible words used. The number of columns is very large because all words used by all presidents, excluding the stop words or other words 'cleaned away', are represented on the columns. The matrix is relatively sparse in that for each row (sentence) only a couple columns have values due to only a few words being used in each sentence. The values are counts of how many times each word was used in each sentence. This format is the first type of input data structure use in the predictive models. (In results tables this format is referred to as 'all BOW counts').
 
-The second input structure used in the predictive models is similar in format to the above except that instead of the values being counts of each word in each sentence, the value is a TFIDF value. A TFIDF (Term-frequency-inverse-document-frequency) value is a way of distinguishing which words are more or less 'important' in the delivered speeches. This value is made up of two calculations:
+The second input structure used in the predictive models is similar in format to the above except that instead of the values being counts of each word in each sentence, the value is a TFIDF value. A TFIDF (Term-frequency-inverse-document-frequency) value is a way of distinguishing which words are more or less 'important' in the delivered speeches (Silge & Robinson, 2017) . This value is made up of two calculations:
 
 -   The term frequency (tf) which is the number of times a specific terms appears in a document, divided by the number of terms in that document.
 
 -   The inverse document frequency (idf) which is a measure of how many documents contain the specific terms and is calculated as the log of the total number of documents divided by the number of documents containing the specific word.
 
-The TFIDF value for a word is the product of the tf and idf measures. This data structure thus contains all the words as columns, the sentences as the rows (made up of different words) and the values in each cell are the TFIDF values. This data input structure may be more beneficial than the bag of words counts because it gives more information in terms of the relative importance or significance of the different words used in different sentences. (In results tables this format is referred to as 'All TFIDF').
+The TFIDF value for a word is the product of the tf and idf measures. This data structure thus contains all the words as columns, the sentences as the rows (made up of different words) and the values in each cell are the TFIDF values (Silge & Robinson, 2017). This data input structure may be more beneficial than the bag of words counts because it gives more information in terms of the relative importance or significance of the different words used in different sentences. (In results tables this format is referred to as 'All TFIDF').
 
 An additional way of varying the input structure which also helps reduce the dimensions of input data is to use only the top 200 most frequent words used by each president. This will help see if using more frequently used words helps better identify which president is speaking. As seen in the initial data exploration of each presidents top 10 words, there may however be significant overlap in each presidents most frequently used words and so this may not be an effective way of improving the predictions. However there maybe be unique words that each president says often that help differentiate them from one another. The top 200 words format is similar to the bag of words format in that the columns are words that make up each presidents most repeated words and the rows represent the sentences. Both counts and TFIDF scores will be used in the 200 top words data input format. (In results tables these formats are referred to as '200 words counts' and '200 words TFIDF' respectively).
 
@@ -512,7 +514,7 @@ A classification tree was fit using the rpart() function in R. Four models were 
 
 ### Boosting - Tree Based Method
 
-The second predictive model that was fit was boosted trees. This is an ensemble learning method and follows on from a simple classification tree. The boosting algorithm iteratively builds decision trees where each subsequent tree learns from previous trees mistakes and so the model gradually improves.
+The second predictive model that was fit was boosted trees. This is an ensemble learning method and follows on from a simple classification tree. The boosting algorithm iteratively builds decision trees where each subsequent tree learns from previous trees mistakes and so the model gradually improves (Hastie, Tibshirani & Friedman, 2008).
 
 To fit the boosted tree the gbm() function from the gbm package was used in R. The formula was the same as in the case of the classfication tree, predicting the president based on the bag of words and TFIDF data. For the input data structures that used only the top 200 words of each president, the number of trees was set to 500. However the input data structure with all words was much larger and took much longer to fit and so only 10 trees were used for this large data set. The interaction.depth was set to 2, shrinkage to 0.01 and bag.fraction to 1 for all models. The remaining parameters were left at the default settings.
 
@@ -550,7 +552,7 @@ Two different architectures of convolutional neural network were fitted to the d
 
 ## [Results]{.underline}
 
-Having outlined the methods and models implemented, the results of these models are now given. For each of the models, where apllicable, the classification accuracy of the models are given in terms of the validation data set. If different configurations of the models have been presented the model with the best validation accuracy is selected and the test set then applied to this model to obtain a final measure of classification accuracy.
+Having outlined the methods and models implemented, the results of these models are now given. For each of the models, where applicable, the classification accuracy of the models are given in terms of the validation data set. If different configurations of the models have been presented the model with the best validation accuracy is selected and the test set then applied to this model to obtain a final measure of classification accuracy.
 
 ### Classification Tree
 
@@ -971,7 +973,9 @@ The test data set is applied to this model to obtain a final prediction accuracy
 
 ### Convolutional Neural Network
 
-The final predictive method that was considered for the predict-the-president problem was a convolutional neural network. As already discussed in the methods section, this predictive model took in a different format of the data by using word embeddings for each of the sentences instead of the bag of words model of input data. Two different architectures were used here as outlined in the methods. Table 5 below summarizes the results of the two methods.
+The final predictive method that was considered for the predict-the-president problem was a convolutional neural network. As already discussed in the methods section, this predictive model took in a different format of the data by using word embeddings for each of the sentences instead of the bag of words model of input data.
+
+Figure 2 below gives a histogram of the sentence lengths using the embeddings, a max length of 15 was selected as the majority of sentences are less than 15 words with some substantial outlying sentences being very long. Padding was applied to those sentences which did not have enough words.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 max_features <- 1000        # choose max_features most popular words
@@ -1063,6 +1067,10 @@ result_test_CNN = model %>% evaluate(x_test, Y_test, batch_size=200, verbose = 0
 
 ```
 
+[*Figure 2: Sentence length with embeddings*]{.underline}
+
+Two different architectures were used here as outlined in the methods. Table 5 below summarizes the results of the two methods.
+
 [*Table 5: Validation Set Classification Accuracy of CNN*]{.underline}
 
 |                                    | CNN 1                                    | CNN 2                                    |
@@ -1086,3 +1094,27 @@ The neural networks proved to have the best classification error of all four kin
 ## [Conclusion]{.underline}
 
 While the results of the models presented here are not particularly strong, the data exploration and model building process have demonstrated how one is able to manipulate and work with text data in order to build predictive models were text is used as inputs. In addition the process has given an overview of a number of techniques that can be used to fit predictive models, including Classification Trees, Boosted Trees, Neural Networks and Convolutional Neural Networks. The model that performed the best for this problem was a simple neural network that had a single hidden layer with 50 nodes. This model took as input a sentence of a speech and was able to predict which of four South African presidents said the sentence with 57% accuracy.
+
+## [References]{.underline}
+
+Allaire, J. and Chollet, F. 2023. \_keras: R Interface to 'Keras'\_. R package version 2.13.0.9000,
+https://tensorflow.rstudio.com/.
+
+Hastie, T., Tibshirani, R. and Friedman, J. 2008. The Elements of Statistical Learning. Springer.
+
+Prasanna, P. and Rao, D. 2018. *Text classification using artificial neural networks.* International Journal of Engineering and Technology.
+
+R Core Team. 2022. R: A language and environment for statistical computing. R Foundation for
+Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+
+Silge, J. and Robinson, D. 2016. Text Mining with R, A tidy approach. O'Reilly.
+
+Silge, J. and Robinson, D. 2016. "tidytext: Text Mining and Analysis Using Tidy Data Principles in R."
+\_JOSS\_, \*1\*(3). doi:10.21105/joss.00037 https://doi.org/10.21105/joss.00037.
+
+Wickham, H. 2022. \_stringr: Simple, Consistent Wrappers for Common String Operations\_. R package version
+ 1.5.0, \<https://CRAN.R-project.org/package=stringr\>.
+
+Wickham H., François R., Henry L., Müller K., Vaughan D. 2023. \_dplyr: A Grammar of Data Manipulation\_. R package version 1.1.3, https://CRAN.R-project.org/package=dplyr.
+
+Zhou, C., Sun, C., Liu, Z. and Lau, F. 2015. *A C-LSTM Neural Network for Text Classification.* Department of Computer Science, University of Hong Kong.

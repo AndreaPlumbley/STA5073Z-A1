@@ -9,8 +9,6 @@ website:
       - href: index.qmd
         text: Home
       - report_working.qmd
-      - Appendix.qmd
-
 format:
   html:
     theme: cosmo

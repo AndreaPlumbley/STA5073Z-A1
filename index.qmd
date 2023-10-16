@@ -2,4 +2,11 @@
 title: "Welcome!"
 ---
 
-This is a website for the submission of Assignment 1 for STA5073Z.
+Name: Andrea Plumbley
+Student Number: PLMAND002
+Course Code: STA5073Z
+
+This is a website for the submission of Assignment 1. The report for submission can be found on the Asignment 1: Report tab. 
+
+
+
